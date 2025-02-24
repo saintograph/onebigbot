@@ -8,7 +8,7 @@
 
 <meta name="author" content="Winfred">
 <meta name="dcterms.date" content="2025-02-24">
-<meta name="description" content="Simulating Space Debris Impact on Spacecraft in LEO with Simulations">
+<meta name="description" content="Simulating Space Debris Impact on Spacecraft in LEO">
 
 <title>Space Debris Impact on LEO Spacecraft – OneBigBot</title>
 <style>
@@ -209,12 +209,13 @@ window.Quarto = {
     <div class="quarto-category">satellite</div>
     <div class="quarto-category">space debris</div>
     <div class="quarto-category">simulation</div>
+    <div class="quarto-category">Python</div>
   </div>
   </div>
 
 <div>
   <div class="description">
-    Simulating Space Debris Impact on Spacecraft in LEO with Simulations
+    Simulating Space Debris Impact on Spacecraft in LEO
   </div>
 </div>
 
@@ -259,10 +260,10 @@ window.Quarto = {
 <section id="satellite-cross-section-drag-area" class="level4">
 <h4 class="anchored" data-anchor-id="satellite-cross-section-drag-area">Satellite cross-section drag area</h4>
 <p>The cross-section of the spacecraft, computed with the ISO Standard Area (Flat Plate Model) for 1U spacecraft</p>
-<p><span class="math display">\[A_{ISO} = \frac{1}{2}(xy + yz + xz)\]</span></p>
+<p><span class="math display">\[A_{\text{ISO}} = \frac{1}{2}(xy + yz + xz)\]</span></p>
 <p>The dimensions of a 1U cubesat are <span class="math display">\[x = y = z = 0.1\text{ m}\]</span></p>
 <p>Therefore</p>
-<p><span class="math display">\[A_{ISO} = \frac{1}{2} (0.1 \times 0.1 + 0.1 \times 0.1 + 0.1 \times 0.1) = \frac{3  \times 0.01}{2} = 0.015 \text{ m}^2\]</span></p>
+<p><span class="math display">\[A_{\text{ISO}} = \frac{1}{2} (0.1 \times 0.1 + 0.1 \times 0.1 + 0.1 \times 0.1) = \frac{3  \times 0.01}{2} = 0.015 \text{ m}^2\]</span></p>
 <p>Applying the correction factor<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> for Cubesats to get an accurate projected area</p>
 <p><span class="math display">\[A_{\text{Projected}} = 0.7295 \times A^{0.9624}_{\text{ISO}}\]</span></p>
 <p>Substituting the earlier <span class="math inline">\(A_{\text{ISO}}\)</span> value of <span class="math inline">\(0.015\text{ m}^2\)</span> gives</p>

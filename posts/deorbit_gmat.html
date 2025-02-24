@@ -6,8 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Winfred">
+<meta name="dcterms.date" content="2025-02-24">
+<meta name="description" content="Simulating Deorbiting with GMAT for a LEO Satellite">
 
-<title>OneBigBot</title>
+<title>Deorbiting simulation with GMAT – OneBigBot</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,22 +26,22 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-48ffa3e5b9d089919c6712c39e5b00f2.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-e4126b404a4ec900ec5fab0b14e51f41.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-48ffa3e5b9d089919c6712c39e5b00f2.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-e4126b404a4ec900ec5fab0b14e51f41.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -68,7 +71,7 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -78,7 +81,7 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">OneBigBot</span>
     </a>
   </div>
@@ -89,15 +92,15 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./blog.html"> 
+    <a class="nav-link" href="../blog.html"> 
 <span class="menu-text">Articles</span></a>
   </li>  
 </ul>
@@ -111,24 +114,181 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#simulating-satellite-deorbiting-using-gmat-and-python" id="toc-simulating-satellite-deorbiting-using-gmat-and-python" class="nav-link active" data-scroll-target="#simulating-satellite-deorbiting-using-gmat-and-python">Simulating Satellite Deorbiting Using GMAT and Python</a>
+  <ul class="collapse">
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#methodology" id="toc-methodology" class="nav-link" data-scroll-target="#methodology">Methodology</a>
+  <ul class="collapse">
+  <li><a href="#step-1-setting-up-the-gmat-simulation" id="toc-step-1-setting-up-the-gmat-simulation" class="nav-link" data-scroll-target="#step-1-setting-up-the-gmat-simulation">Step 1: Setting up the GMAT Simulation</a></li>
+  <li><a href="#step-2-generating-and-analysing-data" id="toc-step-2-generating-and-analysing-data" class="nav-link" data-scroll-target="#step-2-generating-and-analysing-data">Step 2: Generating and Analysing Data</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
+  <ul class="collapse">
+  <li><a href="#satellite-altitude-vs-time" id="toc-satellite-altitude-vs-time" class="nav-link" data-scroll-target="#satellite-altitude-vs-time">1. Satellite Altitude vs Time</a></li>
+  <li><a href="#true-anomaly-vs-time" id="toc-true-anomaly-vs-time" class="nav-link" data-scroll-target="#true-anomaly-vs-time">2. True Anomaly vs Time</a></li>
+  <li><a href="#eccentricity-vs-time" id="toc-eccentricity-vs-time" class="nav-link" data-scroll-target="#eccentricity-vs-time">3. Eccentricity vs Time</a></li>
+  <li><a href="#semi-major-axis-vs-time" id="toc-semi-major-axis-vs-time" class="nav-link" data-scroll-target="#semi-major-axis-vs-time">4. Semi-Major Axis vs Time</a></li>
+  <li><a href="#inclination-and-raan-vs-time" id="toc-inclination-and-raan-vs-time" class="nav-link" data-scroll-target="#inclination-and-raan-vs-time">5. Inclination and RAAN vs Time</a></li>
+  </ul></li>
+  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion">Discussion</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+<main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Deorbiting simulation with GMAT</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">satellite</div>
+    <div class="quarto-category">space debris</div>
+    <div class="quarto-category">simulation</div>
+    <div class="quarto-category">GMAT</div>
+    <div class="quarto-category">Python</div>
+  </div>
+  </div>
 
-
-
-<p>Space, satellites, rockets, and artificial intelligence—these are the areas that really get me excited about engineering. I’m Winfred, and I specialise in spacecraft guidance, navigation, and control (GNC/AOCS). My work involves combining machine learning with classical control techniques to tackle tough problems like orbital mechanics, sensor fusion, and making missions more autonomous. Here, you’ll find projects that bridge these worlds—things like using AI to optimize thruster performance or simulating how a spacecraft figures out its orientation—all with the precision and reliability that space demands.</p>
-<p>Connect with me here: <a href="./about.html">Link</a></p>
-<div id="solar-system" style="width:800px; height:600px; margin:0 auto;">
-
+<div>
+  <div class="description">
+    Simulating Deorbiting with GMAT for a LEO Satellite
+  </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="./js/solar_system.js"> </script>
 
 
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Winfred </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 24, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="simulating-satellite-deorbiting-using-gmat-and-python" class="level1">
+<h1>Simulating Satellite Deorbiting Using GMAT and Python</h1>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>The growing concern over space debris has led to increased efforts to ensure that satellites are responsibly deorbited at the end of their operational life. According to ESA’s “Space Debris Mitigation Requirement”, if the spacecraft relies on natural orbital decay for deorbiting it has to deorbit in 5 years or less</p>
+<p>This mitigates the risk of collisions but also helps maintain a sustainable orbital environment. One critical aspect of this process is understanding how atmospheric drag influences the deorbiting timeline for satellites in Low-Earth Orbit (LEO).</p>
+<p>In this project, <strong>GMAT (General Mission Analysis Tool)</strong> is used to simulate the deorbiting process of a satellite under the influence of atmospheric drag. The results are then analysed with <strong>Python</strong> to visualise key orbital parameters over time, such as altitude, eccentricity, and semi-major axis.</p>
+<p>This blog post will walk you through the methodology, results, and implications of our analysis, offering insights into how engineers and scientists can better prepare for the challenges of operating in an increasingly crowded orbital environment.</p>
+<hr>
+</section>
+<section id="methodology" class="level2">
+<h2 class="anchored" data-anchor-id="methodology">Methodology</h2>
+<section id="step-1-setting-up-the-gmat-simulation" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-setting-up-the-gmat-simulation">Step 1: Setting up the GMAT Simulation</h3>
+<p>GMAT code can be found <a href="https://gist.github.com/saintograph/19401b4809037daa04110045e2d52f61">here</a>.</p>
+<p>Begin by configuring a spacecraft (<code>Sat1</code>) in GMAT with the following initial parameters:</p>
+<ul>
+<li><strong>Epoch:</strong> January 1, 2025</li>
+<li><strong>Initial Position (X, Y, Z):</strong> (4.211560342267748e-13, 6878 km, 0)</li>
+<li><strong>Initial Velocity (VX, VY, VZ):</strong> (0.9541223000883489, -5.842314103991534e-17, 7.552655699128404)</li>
+<li><strong>Dry Mass:</strong> 3 kg</li>
+<li><strong>Drag Coefficient (Cd):</strong> 2.2</li>
+<li><strong>Cross-sectional Area for Drag:</strong> 0.01281 m²</li>
+<li><strong>Solar Radiation Pressure Area (SRP):</strong> 0.01 m²</li>
+</ul>
+<p>Additionally, configure the force model to include Earth’s gravity (degree and order 4), atmospheric drag using the MSISE90 model, and other environmental factors such as solar flux (F10.7 = 150) and geomagnetic activity (Magnetic Index = 3).</p>
+<p>The propagator is set up with a Runge-Kutta 89 integrator, ensuring high accuracy during the simulation. The propagation continues until the satellite reaches a reentry altitude of 120 km.</p>
+</section>
+<section id="step-2-generating-and-analysing-data" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-generating-and-analysing-data">Step 2: Generating and Analysing Data</h3>
+<p>After running the simulation in GMAT, the output data is saved in a report file (e.g., <code>AltitudeReport.txt</code>). This file contains detailed information about the satellite’s orbital parameters over time, including:</p>
+<ul>
+<li>Altitude</li>
+<li>Elapsed Days</li>
+<li>True Anomaly (TA)</li>
+<li>Eccentricity (ECC)</li>
+<li>Argument of Perigee (AOP)</li>
+<li>Semi-Major Axis (SMA)</li>
+<li>Inclination (INC)</li>
+<li>Right Ascension of the Ascending Node (RAAN)</li>
+</ul>
+<p>Load this data into Python using <code>pandas</code> and visualise it using <code>matplotlib</code>. Below are some of the key visualisations generated from the data.</p>
+<hr>
+</section>
+</section>
+<section id="results" class="level2">
+<h2 class="anchored" data-anchor-id="results">Results</h2>
+<section id="satellite-altitude-vs-time" class="level3">
+<h3 class="anchored" data-anchor-id="satellite-altitude-vs-time">1. Satellite Altitude vs Time</h3>
+<p>The first plot shows the satellite’s altitude decreasing over time due to atmospheric drag. The simulation indicates that the satellite takes approximately <strong>5.01 years</strong> to deorbit from its initial altitude of 500 km to the reentry altitude of 120 km.</p>
+<p><img src="./images/deorbit (1).png" class="img-fluid"></p>
+</section>
+<section id="true-anomaly-vs-time" class="level3">
+<h3 class="anchored" data-anchor-id="true-anomaly-vs-time">2. True Anomaly vs Time</h3>
+<p>The true anomaly (TA) represents the angle between the satellite’s position and its perigee. Over time, the true anomaly oscillates, reflecting the satellite’s orbit evolution under the influence of drag.</p>
+<p><img src="./images/deorbit (2).png" class="img-fluid"></p>
+</section>
+<section id="eccentricity-vs-time" class="level3">
+<h3 class="anchored" data-anchor-id="eccentricity-vs-time">3. Eccentricity vs Time</h3>
+<p>The eccentricity of the orbit gradually increases as the satellite descends, indicating that the orbit becomes more elliptical due to atmospheric drag.</p>
+<p><img src="./images/deorbit (3).png" class="img-fluid"></p>
+</section>
+<section id="semi-major-axis-vs-time" class="level3">
+<h3 class="anchored" data-anchor-id="semi-major-axis-vs-time">4. Semi-Major Axis vs Time</h3>
+<p>The semi-major axis decreases steadily over time, showing the shrinking orbit as the satellite loses energy due to drag.</p>
+<p><img src="./images/deorbit (5).png" class="img-fluid"></p>
+</section>
+<section id="inclination-and-raan-vs-time" class="level3">
+<h3 class="anchored" data-anchor-id="inclination-and-raan-vs-time">5. Inclination and RAAN vs Time</h3>
+<p>The inclination and right ascension of the ascending node (RAAN) remain relatively stable throughout the simulation, as these parameters are less affected by atmospheric drag.</p>
+<p><img src="./images/deorbit (6).png" class="img-fluid"></p>
+<p><img src="./images/deorbit (7).png" class="img-fluid"></p>
+<hr>
+</section>
+</section>
+<section id="discussion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
+<p>The simulation results highlight the significant impact of atmospheric drag on satellite orbits in LEO. Key observations include:</p>
+<ul>
+<li>The satellite’s altitude decreases steadily, leading to reentry within approximately 5 years.</li>
+<li>The orbit becomes more elliptical over time, as indicated by the increasing eccentricity.</li>
+<li>Parameters like inclination and RAAN remain largely unaffected, demonstrating their relative insensitivity to drag.</li>
+</ul>
+<p>These findings underscore the importance of designing satellites with appropriate deorbiting strategies, especially as the number of objects in LEO continues to grow.</p>
+<hr>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>With GMAT for orbital mechanics simulations and Python for data analysis, the results provide valuable insights into the dynamics of atmospheric drag and its effects on satellite orbits. Such analyses are crucial for ensuring the long-term sustainability of space operations and mitigating the risks posed by space debris.</p>
+<p>Future work could explore additional factors such as solar activity variations, different satellite configurations, and alternative deorbiting technologies like propulsion systems or tethers.</p>
+<hr>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li><a href="https://documentation.help/gmat/WelcomeToGmat.html">GMAT Documentation</a></li>
+</ul>
+
+
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
