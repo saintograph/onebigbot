@@ -42,76 +42,6 @@
     "text": "References\n\nGMAT Documentation"
   },
   {
-    "objectID": "posts/ground_station_coverage.html",
-    "href": "posts/ground_station_coverage.html",
-    "title": "Ground Station Coverage Analysis for Satellites",
-    "section": "",
-    "text": "credit: Photo by Stephan Widua on Unsplash"
-  },
-  {
-    "objectID": "posts/ground_station_coverage.html#introduction",
-    "href": "posts/ground_station_coverage.html#introduction",
-    "title": "Ground Station Coverage Analysis for Satellites",
-    "section": "Introduction",
-    "text": "Introduction\nThe visibility of satellites from ground stations is a critical factor in ensuring reliable communication and efficient data throughput for satellite missions. This analysis explores the coverage of a satellite constellation from multiple ground stations distributed across the globe, particularly in the northern and southern polar regions.\nThe design of the satellite’s orbit plays a significant role in determining the duration and frequency of communication windows with ground stations. By simulating satellite passes using Two-Line Elements (TLEs) and calculating the time each satellite spends over a station, insights into communication durations and global coverage patterns can be generated.\nThis post will walk through the methodology, results, and implications of analysis, offering insights into how engineers and scientists can optimise ground station networks to ensure reliable communication and data relay for satellite missions."
-  },
-  {
-    "objectID": "posts/ground_station_coverage.html#methodology",
-    "href": "posts/ground_station_coverage.html#methodology",
-    "title": "Ground Station Coverage Analysis for Satellites",
-    "section": "Methodology",
-    "text": "Methodology\n\nStep 1: Data Preparation\nBegin by loading the ground station data from a CSV file, which includes the following information: - Name: The name of the ground station. - Latitude and Longitude: Geographic coordinates of the station. - Region: Indicates whether the station is located in the northern or southern hemisphere.\nHere’s a snippet of the dataset:\n\n\n\n\n\n\n\n\n\n\nName\nLatitude\nLongitude\nRegion\nNotes\n\n\n\n\nSvalbard Satellite Station\n78.229\n15.408\nNorth\nKongsberg Satellite Services\n\n\nNorth Pole Station\n64.800\n-147.650\nNorth\nSwedish Space Corporation\n\n\nAwarua\n-46.530\n168.380\nSouth\nATLAS Space Operations\n\n\nWestern Australia Space Center\n-29.010\n115.340\nSouth\nSwedish Space Corporation (SSC)\n\n\nAU-01\n-32.960\n138.850\nSouth\nLeaf Space\n\n\nSantiago Satellite Station\n-33.133\n-70.667\nSouth\nSwedish Space Corporation (SSC)\n\n\nBelo Horizonte\n-19.861\n-44.619\nSouth\nNew\n\n\nTahiti, French Polynesia\n-17.630\n-149.600\nSouth\nATLAS Space Operations\n\n\nCapetown\n-33.951\n18.459\nSouth\nNew\n\n\nToliara\n-23.375\n43.689\nSouth\nNew\n\n\n\n\n\nStep 2: Visualising Ground Station Locations\nUsing matplotlib and geopandas, plot the global distribution of ground stations on a world map. Stations in the northern hemisphere are marked in red, while those in the southern hemisphere are marked in blue. Each station is annotated with its name for clarity.\n\n\n\nGlobal Distribution of Satellite Ground Stations\n\n\nSummary Statistics:\n\nNorth Region:\n\nNumber of stations: 2\n\nAverage latitude: 71.51°\n\nMinimum latitude: 64.80°\n\nMaximum latitude: 78.23°\n\nSouth Region:\n\nNumber of stations: 8\n\nAverage latitude: -29.56°\n\nMinimum latitude: -46.53°\n\nMaximum latitude: -17.63°\n\n\n\n\nStep 3: Orbit Parameters and Mean Motion\nThe satellite used in this analysis is in a Sun-Synchronous Orbit (SSO) with the following parameters:\n\nSemi-major axis: 6878 km (500 km altitude)\nEccentricity: 0.01\n\nInclination: 97.2°\n\nRight Ascension of the Ascending Node (RAAN): 90°\n\nArgument of Perigee: 0°\n\nTrue Anomaly: 0°\n\nThe mean motion of the satellite is calculated as 15.21982 revolutions per day, which determines how frequently the satellite revisits specific regions.\n\n\nStep 4: Generating TLEs\nTo simulate satellite passes, generate a Two-Line Element (TLE) set for the satellite. The TLE format is widely used for orbital prediction and includes essential orbital elements such as inclination, RAAN, eccentricity, and mean motion.\nExample TLE:\n1 99999U 2520250.000000 .00000000 00000-0 00000-0 0 0000\n2 99999 97.2000 0.0000 0010000 0.0000 0.0000 15.21982000 00000\n\n\nStep 5: Visibility Analysis\nUsing the skyfield library, calculate the visibility of the satellite from each ground station over a 24-hour period. Key metrics include:\n\nRise Time: When the satellite rises above the horizon.\nCulmination Time: When the satellite reaches its highest point in the sky.\nSet Time: When the satellite sets below the horizon.\nDuration: Total time the satellite is visible during a pass.\n\nFor example, the Svalbard Satellite Station experienced the following passes:\n\nPass 1:\n\nRise: 2025-01-18T21:08:27Z\n\nCulmination: 2025-01-18T21:12:10Z\n\nSet: 2025-01-18T21:15:54Z\n\nDuration: 7.44 minutes\n\nPass 2:\n\nRise: 2025-01-18T22:43:02Z\n\nCulmination: 2025-01-18T22:46:26Z\n\nSet: 2025-01-18T22:49:51Z\n\nDuration: 6.81 minutes\n\n\n\n\nStep 6: Visualising Satellite Passes\nVisualise the satellite passes over all ground stations using a horizontal timeline plot. Each line represents a ground station, with markers indicating rise, culmination, and set times.\n\n\n\nSatellite Passes Over Ground Stations"
-  },
-  {
-    "objectID": "posts/ground_station_coverage.html#results",
-    "href": "posts/ground_station_coverage.html#results",
-    "title": "Ground Station Coverage Analysis for Satellites",
-    "section": "Results",
-    "text": "Results\n\nSummary Statistics\nThe analysis provides detailed statistics for each ground station, including the number of passes, average duration, and minimum/maximum durations. Here are some highlights:\n\nSvalbard Satellite Station:\n\nNumber of passes: 10\n\nAverage duration: 6.73 minutes\n\nMinimum duration: 4.98 minutes\n\nMaximum duration: 7.44 minutes\n\nTahiti, French Polynesia:\n\nNumber of passes: 3\n\nAverage duration: 5.47 minutes\n\nMinimum duration: 3.91 minutes\n\nMaximum duration: 7.11 minutes\n\n\n\n\nObservations\n\nGround stations in higher latitudes, such as Svalbard and the North Pole Station, experience more frequent and longer satellite passes due to the near-polar inclination of the orbit.\nMid-latitude stations, such as Belo Horizonte and Capetown, provide complementary coverage, ensuring continuous communication opportunities."
-  },
-  {
-    "objectID": "posts/ground_station_coverage.html#conclusion",
-    "href": "posts/ground_station_coverage.html#conclusion",
-    "title": "Ground Station Coverage Analysis for Satellites",
-    "section": "Conclusion",
-    "text": "Conclusion\nThis analysis demonstrates the importance of strategically placing ground stations to maximise satellite visibility and data throughput. High-latitude stations play a crucial role in providing frequent communication windows, while mid-latitude stations offer additional opportunities for global coverage.\nBy optimising the ground station network based on these insights, mission operators can ensure reliable communication and efficient data relay, supporting the operational requirements of satellite missions in an increasingly crowded orbital environment."
-  },
-  {
-    "objectID": "blog.html",
-    "href": "blog.html",
-    "title": "Projects",
-    "section": "",
-    "text": "Ground Station Coverage Analysis for Satellites\n\n\n\n\n\n\nsatellite\n\n\nPoliastro\n\n\nSkyfield\n\n\nPython\n\n\n\nGetting satellite coverage for a network of ground stations\n\n\n\n\n\nFeb 25, 2025\n\n\nWinfred\n\n\n\n\n\n\n\n\n\n\n\n\nSpace Debris Impact on LEO Spacecraft\n\n\n\n\n\n\nsatellite\n\n\nspace debris\n\n\nsimulation\n\n\nPython\n\n\n\nSimulating Space Debris Impact on Spacecraft in LEO\n\n\n\n\n\nFeb 24, 2025\n\n\nWinfred\n\n\n\n\n\n\n\n\n\n\n\n\nDeorbiting simulation with GMAT\n\n\n\n\n\n\nsatellite\n\n\nspace debris\n\n\nsimulation\n\n\nGMAT\n\n\nPython\n\n\n\nSimulating Deorbiting with GMAT for a LEO Satellite\n\n\n\n\n\nFeb 24, 2025\n\n\nWinfred\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "Winfred S. Ooh Azlin",
-    "section": "",
-    "text": "Email\nWelcome to the website of space engineer Winfred S. Ooh Azlin, specialist in orbital mechanics, astrodynamics simulations, and trajectory optimization for space missions. Here, you’ll find insights into satellite mission planning, control systems, and software-driven optimisations bridging physics and engineering."
-  },
-  {
-    "objectID": "about.html#experience",
-    "href": "about.html#experience",
-    "title": "Winfred S. Ooh Azlin",
-    "section": "Experience",
-    "text": "Experience\nAstra e.V. | Aerodynamics & Trajectory Planning | Feb 2025 - present IntentAI Pte. Ltd. | Senior AI Software Engineer | Dec 2023 - January 2025 Carsome Sdn. Bhd. | Senior Software Engineer | May 2022 - Dec 2023 Nindatech Sdn. Bhd. | Senior Software Engineer | Dec 2019 - Apr 2022 Udacity Inc. | Software Engineer (External Consultant) & Mentor | June 2017 - Mar 2021 OneRelief | Lead Developer | Sep 2018 - Nov 2019"
-  },
-  {
-    "objectID": "about.html#education",
-    "href": "about.html#education",
-    "title": "Winfred S. Ooh Azlin",
-    "section": "Education",
-    "text": "Education\nTechnische Universität Berlin, Berlin | Berlin, Germany MSc. Space Engineering | Apr 2024 - In-progress  The Open University | Milton Keynes, United Kingdom MPhys. Physics | Oct 2022 - In-progress  University of London | London, United Kingdom BSc. Computer Science | Apr 2019 - Nov. 2022"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "OneBigBot",
-    "section": "",
-    "text": "Space, satellites, rockets, and artificial intelligence—these are the areas that really get me excited about engineering. I’m Winfred, and I specialise in spacecraft guidance, navigation, and control (GNC/AOCS). My work involves combining machine learning with classical control techniques to tackle tough problems like orbital mechanics, sensor fusion, and making missions more autonomous. Here, you’ll find projects that bridge these worlds—things like using AI to optimize thruster performance or simulating how a spacecraft figures out its orientation—all with the precision and reliability that space demands.\nConnect with me here: Link"
-  },
-  {
     "objectID": "posts/space_debris.html",
     "href": "posts/space_debris.html",
     "title": "Space Debris Impact on LEO Spacecraft",
@@ -159,5 +89,110 @@
     "title": "Space Debris Impact on LEO Spacecraft",
     "section": "Footnotes",
     "text": "Footnotes\n\n\nKerr, E., & Macdonald, M., 2015. IAC-15-A6.4.6 Page 1 of 6 IAC-15-A6.4.6 IMPROVING THE ACCURACY OF GENERAL PERTURBATIONS METHODS FOR SPACECRAFT LIFETIME ANALYSIS..↩︎"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "OneBigBot",
+    "section": "",
+    "text": "Space, satellites, rockets, and artificial intelligence—these are the areas that really get me excited about engineering. I’m Winfred, and I specialise in spacecraft guidance, navigation, and control (GNC/AOCS). My work involves combining machine learning with classical control techniques to tackle tough problems like orbital mechanics, sensor fusion, and making missions more autonomous. Here, you’ll find projects that bridge these worlds—things like using AI to optimize thruster performance or simulating how a spacecraft figures out its orientation—all with the precision and reliability that space demands.\nConnect with me here: Link"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "Winfred S. Ooh Azlin",
+    "section": "",
+    "text": "Email\nWelcome to the website of space engineer Winfred S. Ooh Azlin, specialist in orbital mechanics, astrodynamics simulations, and trajectory optimization for space missions. Here, you’ll find insights into satellite mission planning, control systems, and software-driven optimisations bridging physics and engineering."
+  },
+  {
+    "objectID": "about.html#experience",
+    "href": "about.html#experience",
+    "title": "Winfred S. Ooh Azlin",
+    "section": "Experience",
+    "text": "Experience\nAstra e.V. | Aerodynamics & Trajectory Planning | Feb 2025 - present IntentAI Pte. Ltd. | Senior AI Software Engineer | Dec 2023 - January 2025 Carsome Sdn. Bhd. | Senior Software Engineer | May 2022 - Dec 2023 Nindatech Sdn. Bhd. | Senior Software Engineer | Dec 2019 - Apr 2022 Udacity Inc. | Software Engineer (External Consultant) & Mentor | June 2017 - Mar 2021 OneRelief | Lead Developer | Sep 2018 - Nov 2019"
+  },
+  {
+    "objectID": "about.html#education",
+    "href": "about.html#education",
+    "title": "Winfred S. Ooh Azlin",
+    "section": "Education",
+    "text": "Education\nTechnische Universität Berlin, Berlin | Berlin, Germany MSc. Space Engineering | Apr 2024 - In-progress  The Open University | Milton Keynes, United Kingdom MPhys. Physics | Oct 2022 - In-progress  University of London | London, United Kingdom BSc. Computer Science | Apr 2019 - Nov. 2022"
+  },
+  {
+    "objectID": "blog.html",
+    "href": "blog.html",
+    "title": "Projects",
+    "section": "",
+    "text": "Sunlight and Eclipse Periods Analysis for a SSO orbit\n\n\n\n\n\n\nsatellite\n\n\nSkyfield\n\n\nPython\n\n\nOrbital Mechanics\n\n\n\nAnalysing the sunlight and eclipse periods for a satellite in orbit over 744 hours (31 days)\n\n\n\n\n\nFeb 26, 2025\n\n\nWinfred\n\n\n\n\n\n\n\n\n\n\n\n\nGround Station Coverage Analysis for Satellites\n\n\n\n\n\n\nsatellite\n\n\nPoliastro\n\n\nSkyfield\n\n\nPython\n\n\n\nGetting satellite coverage for a network of ground stations\n\n\n\n\n\nFeb 25, 2025\n\n\nWinfred\n\n\n\n\n\n\n\n\n\n\n\n\nSpace Debris Impact on LEO Spacecraft\n\n\n\n\n\n\nsatellite\n\n\nspace debris\n\n\nsimulation\n\n\nPython\n\n\n\nSimulating Space Debris Impact on Spacecraft in LEO\n\n\n\n\n\nFeb 24, 2025\n\n\nWinfred\n\n\n\n\n\n\n\n\n\n\n\n\nDeorbiting simulation with GMAT\n\n\n\n\n\n\nsatellite\n\n\nspace debris\n\n\nsimulation\n\n\nGMAT\n\n\nPython\n\n\n\nSimulating Deorbiting with GMAT for a LEO Satellite\n\n\n\n\n\nFeb 24, 2025\n\n\nWinfred\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/ground_station_coverage.html",
+    "href": "posts/ground_station_coverage.html",
+    "title": "Ground Station Coverage Analysis for Satellites",
+    "section": "",
+    "text": "credit: Photo by Stephan Widua on Unsplash"
+  },
+  {
+    "objectID": "posts/ground_station_coverage.html#introduction",
+    "href": "posts/ground_station_coverage.html#introduction",
+    "title": "Ground Station Coverage Analysis for Satellites",
+    "section": "Introduction",
+    "text": "Introduction\nThe visibility of satellites from ground stations is a critical factor in ensuring reliable communication and efficient data throughput for satellite missions. This analysis explores the coverage of a satellite constellation from multiple ground stations distributed across the globe, particularly in the northern and southern polar regions.\nThe design of the satellite’s orbit plays a significant role in determining the duration and frequency of communication windows with ground stations. By simulating satellite passes using Two-Line Elements (TLEs) and calculating the time each satellite spends over a station, insights into communication durations and global coverage patterns can be generated.\nThis post will walk through the methodology, results, and implications of analysis, offering insights into how engineers and scientists can optimise ground station networks to ensure reliable communication and data relay for satellite missions."
+  },
+  {
+    "objectID": "posts/ground_station_coverage.html#methodology",
+    "href": "posts/ground_station_coverage.html#methodology",
+    "title": "Ground Station Coverage Analysis for Satellites",
+    "section": "Methodology",
+    "text": "Methodology\n\nStep 1: Data Preparation\nBegin by loading the ground station data from a CSV file, which includes the following information: - Name: The name of the ground station. - Latitude and Longitude: Geographic coordinates of the station. - Region: Indicates whether the station is located in the northern or southern hemisphere.\nHere’s a snippet of the dataset:\n\n\n\n\n\n\n\n\n\n\nName\nLatitude\nLongitude\nRegion\nNotes\n\n\n\n\nSvalbard Satellite Station\n78.229\n15.408\nNorth\nKongsberg Satellite Services\n\n\nNorth Pole Station\n64.800\n-147.650\nNorth\nSwedish Space Corporation\n\n\nAwarua\n-46.530\n168.380\nSouth\nATLAS Space Operations\n\n\nWestern Australia Space Center\n-29.010\n115.340\nSouth\nSwedish Space Corporation (SSC)\n\n\nAU-01\n-32.960\n138.850\nSouth\nLeaf Space\n\n\nSantiago Satellite Station\n-33.133\n-70.667\nSouth\nSwedish Space Corporation (SSC)\n\n\nBelo Horizonte\n-19.861\n-44.619\nSouth\nNew\n\n\nTahiti, French Polynesia\n-17.630\n-149.600\nSouth\nATLAS Space Operations\n\n\nCapetown\n-33.951\n18.459\nSouth\nNew\n\n\nToliara\n-23.375\n43.689\nSouth\nNew\n\n\n\n\n\nStep 2: Visualising Ground Station Locations\nUsing matplotlib and geopandas, plot the global distribution of ground stations on a world map. Stations in the northern hemisphere are marked in red, while those in the southern hemisphere are marked in blue. Each station is annotated with its name for clarity.\n\n\n\nGlobal Distribution of Satellite Ground Stations\n\n\nSummary Statistics:\n\nNorth Region:\n\nNumber of stations: 2\n\nAverage latitude: 71.51°\n\nMinimum latitude: 64.80°\n\nMaximum latitude: 78.23°\n\nSouth Region:\n\nNumber of stations: 8\n\nAverage latitude: -29.56°\n\nMinimum latitude: -46.53°\n\nMaximum latitude: -17.63°\n\n\n\n\nStep 3: Orbit Parameters and Mean Motion\nThe satellite used in this analysis is in a Sun-Synchronous Orbit (SSO) with the following parameters:\n\nSemi-major axis: 6878 km (500 km altitude)\nEccentricity: 0.01\n\nInclination: 97.2°\n\nRight Ascension of the Ascending Node (RAAN): 90°\n\nArgument of Perigee: 0°\n\nTrue Anomaly: 0°\n\nThe mean motion of the satellite is calculated as 15.21982 revolutions per day, which determines how frequently the satellite revisits specific regions.\n\n\nStep 4: Generating TLEs\nTo simulate satellite passes, generate a Two-Line Element (TLE) set for the satellite. The TLE format is widely used for orbital prediction and includes essential orbital elements such as inclination, RAAN, eccentricity, and mean motion.\nExample TLE:\n1 99999U 2520250.000000 .00000000 00000-0 00000-0 0 0000\n2 99999 97.2000 0.0000 0010000 0.0000 0.0000 15.21982000 00000\n\n\nStep 5: Visibility Analysis\nUsing the skyfield library, calculate the visibility of the satellite from each ground station over a 24-hour period. Key metrics include:\n\nRise Time: When the satellite rises above the horizon.\nCulmination Time: When the satellite reaches its highest point in the sky.\nSet Time: When the satellite sets below the horizon.\nDuration: Total time the satellite is visible during a pass.\n\nFor example, the Svalbard Satellite Station experienced the following passes:\n\nPass 1:\n\nRise: 2025-01-18T21:08:27Z\n\nCulmination: 2025-01-18T21:12:10Z\n\nSet: 2025-01-18T21:15:54Z\n\nDuration: 7.44 minutes\n\nPass 2:\n\nRise: 2025-01-18T22:43:02Z\n\nCulmination: 2025-01-18T22:46:26Z\n\nSet: 2025-01-18T22:49:51Z\n\nDuration: 6.81 minutes\n\n\n\n\nStep 6: Visualising Satellite Passes\nVisualise the satellite passes over all ground stations using a horizontal timeline plot. Each line represents a ground station, with markers indicating rise, culmination, and set times.\n\n\n\nSatellite Passes Over Ground Stations"
+  },
+  {
+    "objectID": "posts/ground_station_coverage.html#results",
+    "href": "posts/ground_station_coverage.html#results",
+    "title": "Ground Station Coverage Analysis for Satellites",
+    "section": "Results",
+    "text": "Results\n\nSummary Statistics\nThe analysis provides detailed statistics for each ground station, including the number of passes, average duration, and minimum/maximum durations. Here are some highlights:\n\nSvalbard Satellite Station:\n\nNumber of passes: 10\n\nAverage duration: 6.73 minutes\n\nMinimum duration: 4.98 minutes\n\nMaximum duration: 7.44 minutes\n\nTahiti, French Polynesia:\n\nNumber of passes: 3\n\nAverage duration: 5.47 minutes\n\nMinimum duration: 3.91 minutes\n\nMaximum duration: 7.11 minutes\n\n\n\n\nObservations\n\nGround stations in higher latitudes, such as Svalbard and the North Pole Station, experience more frequent and longer satellite passes due to the near-polar inclination of the orbit.\nMid-latitude stations, such as Belo Horizonte and Capetown, provide complementary coverage, ensuring continuous communication opportunities."
+  },
+  {
+    "objectID": "posts/ground_station_coverage.html#conclusion",
+    "href": "posts/ground_station_coverage.html#conclusion",
+    "title": "Ground Station Coverage Analysis for Satellites",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis analysis demonstrates the importance of strategically placing ground stations to maximise satellite visibility and data throughput. High-latitude stations play a crucial role in providing frequent communication windows, while mid-latitude stations offer additional opportunities for global coverage.\nBy optimising the ground station network based on these insights, mission operators can ensure reliable communication and efficient data relay, supporting the operational requirements of satellite missions in an increasingly crowded orbital environment."
+  },
+  {
+    "objectID": "posts/sunlight_exposure.html",
+    "href": "posts/sunlight_exposure.html",
+    "title": "Sunlight and Eclipse Periods Analysis for a SSO orbit",
+    "section": "",
+    "text": "credit: Photo by Kevin Stadnyk on Unsplash"
+  },
+  {
+    "objectID": "posts/sunlight_exposure.html#introduction",
+    "href": "posts/sunlight_exposure.html#introduction",
+    "title": "Sunlight and Eclipse Periods Analysis for a SSO orbit",
+    "section": "Introduction",
+    "text": "Introduction\nUnderstanding the sunlight and eclipse periods of a satellite is crucial for mission planning, particularly for power management and thermal control. Satellites rely on solar energy for operation, but when they pass through Earth’s shadow, onboard batteries must provide power. The frequency and duration of these eclipses depend on the satellite’s orbit.\nThis blog post explores how to determine sunlight and eclipse durations for a satellite using Python and the Skyfield library. We analyse a Sun-Synchronous Orbit (SSO) with varying Right Ascension of the Ascending Node (RAAN) values and compute the total sunlight and eclipse hours over 31 days (744 hours)."
+  },
+  {
+    "objectID": "posts/sunlight_exposure.html#methodology",
+    "href": "posts/sunlight_exposure.html#methodology",
+    "title": "Sunlight and Eclipse Periods Analysis for a SSO orbit",
+    "section": "Methodology",
+    "text": "Methodology\n\nStep 1: Define the Satellite Orbit\nWe define a satellite with the following orbital parameters for a SSO orbit:\n\nSemi-major axis (sma): 6878 km (500 km altitude)\nEccentricity (ecc): 0.03\n\nInclination (inc): 97.4°\n\nArgument of Perigee (aop): 0.0°\n\nMean Anomaly: 0.0°\n\nEpoch: January 1, 2025, 12:00 UTC\n\nGenerate a Two-Line Element (TLE) set based on these parameters:\nfrom skyfield.api import load, EarthSatellite, wgs84\nfrom datetime import datetime\nfrom pytz import utc\nimport math\n\nts = load.timescale()\n\nbase_params = {\n    'sma': 6878.0,\n    'ecc': 0.03,\n    'inc': 97.4,\n    'aop': 0.0,\n    'mean_anomaly': 0.0,\n    'epoch': datetime(2025, 1, 1, 12, 0, 0, tzinfo=utc)\n}\n\ndef create_tle(satellite_name, raan):\n    mu = 3.986004418e5  # Earth's gravitational parameter (km^3/s^2)\n    sma_km = base_params['sma']\n    n_rad_s = math.sqrt(mu / (sma_km ** 3))\n    n_rev_per_day = n_rad_s * 86400 / (2 * math.pi)\n    mean_motion = f\"{n_rev_per_day:11.8f}\"\n\n    line1 = f\"1 00001U 00000A   25001.50000000  .00000000  00000-0  00000-0 0  0001\"\n    line2 = f\"2 00001 {base_params['inc']:8.4f} {raan:8.4f} {base_params['ecc'] * 1e7:07.0f} {base_params['aop']:8.4f} {base_params['mean_anomaly']:8.4f} {mean_motion}    00\"\n    \n    return EarthSatellite(line1, line2, satellite_name, ts)\n\n\nStep 2: Computing Sunlight and Eclipse Durations\nTo determine when the satellite is in eclipse, use Skyfield to check whether the satellite is illuminated by the Sun. The function below calculates the total duration of sunlight and eclipse over a one-month period:\nfrom skyfield.searchlib import find_discrete\n\ndef total_eclipse_sunlight(satellite):\n    eph = load('de421.bsp')\n    start_time = ts.utc(2025, 1, 1)\n    end_time = ts.utc(2025, 2, 1)\n\n    def is_eclipse(t):\n        sunlit = satellite.at(t).is_sunlit(eph)\n        return ~sunlit  # Returns True if in eclipse, False if in sunlight\n\n    is_eclipse.step_days = 0.0005\n    times, events = find_discrete(start_time, end_time, is_eclipse)\n\n    total_eclipse = 0.0\n    total_sunlight = 0.0\n    previous_time = start_time\n    previous_state = is_eclipse(start_time)\n\n    for ti, state in zip(times, events):\n        duration_hours = (ti - previous_time) * 24\n        if previous_state:\n            total_eclipse += duration_hours\n        else:\n            total_sunlight += duration_hours\n        previous_time = ti\n        previous_state = state\n\n    final_duration = (end_time - previous_time) * 24\n    \n    if previous_state:\n        total_eclipse += final_duration\n    else:\n        total_sunlight += final_duration\n\n    print(f\"Total sunlight: {total_sunlight:.2f} hours\")\n    print(f\"Total eclipse: {total_eclipse:.2f} hours\")\n\n\nStep 3: Running the Analysis for Different RAAN Values\nThe Right Ascension of the Ascending Node (RAAN) affects the orbit’s orientation relative to the Sun, influencing the eclipse duration. Analyse three different RAAN values:\nraan_values = [50.0, 120.0, 240.0]\n\nfor raan in raan_values:\n    satellite = create_tle(f\"Sat_RAAN_{raan}\", raan)\n    print(f\"\\nRAAN: {raan}°\")\n    total_eclipse_sunlight(satellite)"
+  },
+  {
+    "objectID": "posts/sunlight_exposure.html#results",
+    "href": "posts/sunlight_exposure.html#results",
+    "title": "Sunlight and Eclipse Periods Analysis for a SSO orbit",
+    "section": "Results",
+    "text": "Results\n\nEclipse and Sunlight Durations\n\n\n\nRAAN (°)\nTotal Sunlight (hours)\nTotal Eclipse (hours)\n\n\n\n\n50.0\n526.27\n217.73\n\n\n120.0\n465.76\n278.24\n\n\n240.0\n484.98\n259.02\n\n\n\n\n\nObservations\n\nThe total time in eclipse varies significantly with RAAN, ranging from 217.73 to 278.24 hours over the month.\nRAAN = 120° experiences the most eclipse time (278.24 hours), while RAAN = 50° has the least (217.73 hours).\nThe difference of over 60 hours of eclipse per month between RAAN values highlights how orbital orientation affects sunlight exposure.\nThese eclipse durations correspond to an average eclipse duration per orbit of approximately 27 to 35 minutes, though individual eclipses may be longer or shorter."
+  },
+  {
+    "objectID": "posts/sunlight_exposure.html#conclusion",
+    "href": "posts/sunlight_exposure.html#conclusion",
+    "title": "Sunlight and Eclipse Periods Analysis for a SSO orbit",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis analysis demonstrates how to compute sunlight and eclipse durations for satellites using Python and Skyfield. Eclipse predictions are crucial for power management, thermal control, and overall satellite mission planning.\n\nKey Takeaways:\n\nSatellites experience periodic eclipses, requiring battery-powered operation during shadow periods.\nRAAN affects the total eclipse duration, but variations are generally small for Sun-Synchronous Orbits.\nPython and Skyfield provide powerful tools for analyzing orbital illumination conditions.\nMission planners must optimize battery storage and solar panel efficiency to ensure uninterrupted operation during eclipse phases.\n\nBy understanding eclipse patterns, engineers can design resilient power systems for satellites, ensuring they remain operational even during extended shadow periods."
   }
 ]
