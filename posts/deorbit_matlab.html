@@ -223,20 +223,38 @@ window.Quarto = {
 <li><strong>Drag Coefficient (<code>Cd</code>):</strong> <span class="math inline">\(2.2\)</span></li>
 <li><strong>Cross-sectional Area for Drag:</strong> <span class="math inline">\(0.01281 \, \text{m}^2\)</span></li>
 </ul>
-<p>The satellite’s initial position and velocity are specified in meters and meters per second: - <strong>Initial Position (X, Y, Z):</strong> <span class="math inline">\((4.211560342267748 \times 10^{-13}, 6878 \, \text{km}, 0)\)</span> - <strong>Initial Velocity (VX, VY, VZ):</strong> <span class="math inline">\((0.9541223000883489, -5.842314103991534 \times 10^{-17}, 7.552655699128404)\)</span></p>
-<p>There are forces in a simulation such as: - The gravitational force is computed according to Newton’s law of gravitation. - The atmospheric drag is modeled based on altitude, velocity, and density of the atmosphere. The density shows a pattern of exponential decay in terms of a standard reference value at an altitude of 150 km and the scale height of 60 km.</p>
+<p>The satellite’s initial position and velocity are specified in meters and meters per second:</p>
+<ul>
+<li><strong>Initial Position (X, Y, Z):</strong> <span class="math inline">\((4.211560342267748 \times 10^{-13}, 6878 \, \text{km}, 0)\)</span></li>
+<li><strong>Initial Velocity (VX, VY, VZ):</strong> <span class="math inline">\((0.9541223000883489, -5.842314103991534 \times 10^{-17}, 7.552655699128404)\)</span></li>
+</ul>
+<p>There are forces in a simulation such as:</p>
+<ul>
+<li>The gravitational force is computed according to Newton’s law of gravitation.</li>
+<li>The atmospheric drag is modeled based on altitude, velocity, and density of the atmosphere. The density shows a pattern of exponential decay in terms of a standard reference value at an altitude of 150 km and the scale height of 60 km.</li>
+</ul>
 <p>The propagation is achieved using the MATLAB ‘ode45’ solver, which solves the equations of motion over time. This simulation is continued until the satellite reaches the point of re-entry above the earth, namely 120 km of altitude, after which an event function is triggered to stop the propagation.</p>
 </section>
 <section id="step-2-generating-and-analyzing-data" class="level3">
 <h3 class="anchored" data-anchor-id="step-2-generating-and-analyzing-data">Step 2: Generating and Analyzing Data</h3>
-<p>Once the simulation is completed, some result values are returned by the script, which include: - <strong>Re-entry Time:</strong> The time (in days and years) when the satellite reaches the re-entry altitude. - <strong>Re-entry Altitude:</strong> The altitude at which re-entry occurs. - <strong>Trajectory Visualization:</strong> A 3D plot of the satellite’s path around Earth with the re-entry point-visible. - <strong>Altitude Decay Profile:</strong> The time-altitude plot illustrating how altitude decreases over time for a satellite.</p>
+<p>Once the simulation is completed, some result values are returned by the script, which include:</p>
+<ul>
+<li><strong>Re-entry Time:</strong> The time (in days and years) when the satellite reaches the re-entry altitude.</li>
+<li><strong>Re-entry Altitude:</strong> The altitude at which re-entry occurs.</li>
+<li><strong>Trajectory Visualization:</strong> A 3D plot of the satellite’s path around Earth with the re-entry point-visible.</li>
+<li><strong>Altitude Decay Profile:</strong> The time-altitude plot illustrating how altitude decreases over time for a satellite.</li>
+</ul>
 <p>The script may return:</p>
 <pre><code>Reentry reached at t = 3456.78 days (9.47 years)
 Reentry altitude = 119995.23 meters</code></pre>
 </section>
 <section id="step-3-visualizing-results" class="level3">
 <h3 class="anchored" data-anchor-id="step-3-visualizing-results">Step 3: Visualizing Results</h3>
-<p>The script produces two important plots: 1. <strong>3D Trajectory Plot:</strong> This shows a spiraling trajectory of the satellite heading toward Earth as it re-enters. 2. <strong>Altitude vs Time Plot:</strong> It shows the orbit is decaying continuously due to atmospheric drag, with greater acceleration coming from denser layers of atmosphere as the satellite descends.</p>
+<p>The script produces two important plots:</p>
+<ol type="1">
+<li><strong>3D Trajectory Plot:</strong> This shows a spiraling trajectory of the satellite heading toward Earth as it re-enters.</li>
+<li><strong>Altitude vs Time Plot:</strong> It shows the orbit is decaying continuously due to atmospheric drag, with greater acceleration coming from denser layers of atmosphere as the satellite descends.</li>
+</ol>
 <p>Both plots provide insights into the process of deorbiting and a confidence check for simulation accuracy.</p>
 <p><img src="images/matlab_deorbit.jpg" class="img-fluid"></p>
 <hr>
@@ -244,7 +262,12 @@ Reentry altitude = 119995.23 meters</code></pre>
 </section>
 <section id="results-and-implications" class="level2">
 <h2 class="anchored" data-anchor-id="results-and-implications">Results and Implications</h2>
-<p>In the simulation the atmospheric drag had a profound influence on the orbital decay of LEO satellites. Findings include the following: - <strong>Predictable Re-entry Timeline:</strong> The script predicts accurately the time when the satellite enters the atmosphere of Earth. This provides a clear re-entry timeline for the mission planners. - <strong>Drag Parameters Matter:</strong> A change in either the drag coefficient or area can have significant effects on the deorbiting timeline, thus emphasizing the need for accurate modeling. - <strong>Useful Visualization Tools:</strong> The 3D trajectory and altitude decay plots are intuitive and provide a means for understanding and conveying the process of deorbiting.</p>
+<p>In the simulation the atmospheric drag had a profound influence on the orbital decay of LEO satellites. Findings include the following:</p>
+<ul>
+<li><strong>Predictable Re-entry Timeline:</strong> The script predicts accurately the time when the satellite enters the atmosphere of Earth. This provides a clear re-entry timeline for the mission planners.</li>
+<li><strong>Drag Parameters Matter:</strong> A change in either the drag coefficient or area can have significant effects on the deorbiting timeline, thus emphasizing the need for accurate modeling.</li>
+<li><strong>Useful Visualization Tools:</strong> The 3D trajectory and altitude decay plots are intuitive and provide a means for understanding and conveying the process of deorbiting.</li>
+</ul>
 <p>These insights would assist in the responsible disposal of satellites and the reduced risk of space debris, thus promoting compliance with international guidelines.</p>
 <hr>
 </section>
