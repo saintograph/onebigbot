@@ -23,6 +23,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -233,6 +267,106 @@ window.Quarto = {
 <li>The gravitational force is computed according to Newton’s law of gravitation.</li>
 <li>The atmospheric drag is modeled based on altitude, velocity, and density of the atmosphere. The density shows a pattern of exponential decay in terms of a standard reference value at an altitude of 150 km and the scale height of 60 km.</li>
 </ul>
+<p>Here’s the code</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode matlab code-with-copy"><code class="sourceCode matlab"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="va">orbital_decay</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">%% Constants</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="va">mu</span> <span class="op">=</span> <span class="fl">3.986e14</span><span class="op">;</span>  <span class="co">% Earth's gravitational parameter [m^3/s^2]</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="va">Re</span> <span class="op">=</span> <span class="fl">6378e3</span><span class="op">;</span>    <span class="co">% Earth's radius [m]</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">%% Spacecraft Properties</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="va">m</span>  <span class="op">=</span> <span class="fl">3</span><span class="op">;</span>         <span class="co">% mass [kg]</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="va">Cd</span> <span class="op">=</span> <span class="fl">2.2</span><span class="op">;</span>       <span class="co">% drag coefficient</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="va">A</span>  <span class="op">=</span> <span class="fl">0.01281</span><span class="op">;</span>   <span class="co">% cross-sectional area [m^2]</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">%% Initial Conditions</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="va">x0</span>  <span class="op">=</span> <span class="fl">4.211560342267748e-13</span> <span class="op">*</span> <span class="fl">1000</span><span class="op">;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="va">y0</span>  <span class="op">=</span> <span class="fl">6878e3</span><span class="op">;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="va">z0</span>  <span class="op">=</span> <span class="fl">0</span><span class="op">;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="va">vx0</span> <span class="op">=</span> <span class="fl">0.9541223000883489</span> <span class="op">*</span> <span class="fl">1000</span><span class="op">;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="va">vy0</span> <span class="op">=</span> <span class="op">-</span><span class="fl">5.842314103991534e-17</span> <span class="op">*</span> <span class="fl">1000</span><span class="op">;</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="va">vz0</span> <span class="op">=</span> <span class="fl">7.552655699128404</span> <span class="op">*</span> <span class="fl">1000</span><span class="op">;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="va">state0</span> <span class="op">=</span> [<span class="va">x0</span><span class="op">;</span> <span class="va">y0</span><span class="op">;</span> <span class="va">z0</span><span class="op">;</span> <span class="va">vx0</span><span class="op">;</span> <span class="va">vy0</span><span class="op">;</span> <span class="va">vz0</span>]<span class="op">;</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">%% Simulation Parameters</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="co">% approx. 10 years</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="va">tspan</span> <span class="op">=</span> [<span class="fl">0</span> <span class="fl">3.15e8</span>]<span class="op">;</span>  </span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="co">% Stop when altitude &lt;= 120 km</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="va">options</span> <span class="op">=</span> <span class="va">odeset</span>(<span class="ss">'Events'</span><span class="op">,</span> <span class="op">@</span>(<span class="va">t</span><span class="op">,</span> <span class="va">state</span>) <span class="va">reentryEvent</span>(<span class="va">t</span><span class="op">,</span> <span class="va">state</span><span class="op">,</span> <span class="va">Re</span>)<span class="op">,</span> <span class="op">...</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>                     <span class="ss">'RelTol'</span><span class="op">,</span><span class="fl">1e-7</span><span class="op">,</span> <span class="ss">'AbsTol'</span><span class="op">,</span><span class="fl">1e-9</span>)<span class="op">;</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>                 </span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="co">%% Propagate</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    [<span class="va">t</span><span class="op">,</span> <span class="va">state</span><span class="op">,</span> <span class="va">te</span><span class="op">,</span> <span class="va">stateEvent</span>] <span class="op">=</span> <span class="va">ode45</span>(<span class="op">@</span>(<span class="va">t</span><span class="op">,</span> <span class="va">state</span>) <span class="va">odeEquations</span>(<span class="va">t</span><span class="op">,</span> <span class="va">state</span><span class="op">,</span> <span class="va">mu</span><span class="op">,</span> <span class="va">m</span><span class="op">,</span> <span class="va">Cd</span><span class="op">,</span> <span class="va">A</span><span class="op">,</span> <span class="va">Re</span>)<span class="op">,</span> <span class="va">tspan</span><span class="op">,</span> <span class="va">state0</span><span class="op">,</span> <span class="va">options</span>)<span class="op">;</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="co">%% Check if event triggered</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> <span class="va">isempty</span>(<span class="va">stateEvent</span>)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>        <span class="va">disp</span>(<span class="ss">'Reentry altitude was not reached within the simulation time.'</span>)<span class="op">;</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    <span class="kw">else</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>        <span class="va">r_event</span> <span class="op">=</span> <span class="va">norm</span>(<span class="va">stateEvent</span>(<span class="fl">1</span><span class="op">:</span><span class="fl">3</span>))<span class="op">;</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        <span class="va">alt_event</span> <span class="op">=</span> <span class="va">r_event</span> <span class="op">-</span> <span class="va">Re</span><span class="op">;</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>        <span class="va">years</span> <span class="op">=</span> <span class="va">te</span><span class="op">/</span><span class="fl">3.154e7</span><span class="op">;</span>  <span class="co">% seconds to years</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>        <span class="va">fprintf</span>(<span class="ss">'Reentry reached at t = %.2f days (%.2f years)\n'</span><span class="op">,</span> <span class="va">te</span><span class="op">/</span><span class="fl">86400</span><span class="op">,</span> <span class="va">years</span>)<span class="op">;</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>        <span class="va">fprintf</span>(<span class="ss">'Reentry altitude = %.2f meters\n'</span><span class="op">,</span> <span class="va">alt_event</span>)<span class="op">;</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    <span class="kw">end</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>    <span class="co">%% Plot the 3D orbit</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    <span class="va">figure</span><span class="op">;</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>    <span class="va">plot3</span>(<span class="va">state</span>(<span class="op">:,</span><span class="fl">1</span>)<span class="op">,</span> <span class="va">state</span>(<span class="op">:,</span><span class="fl">2</span>)<span class="op">,</span> <span class="va">state</span>(<span class="op">:,</span><span class="fl">3</span>)<span class="op">,</span> <span class="ss">'b-'</span><span class="op">,</span> <span class="ss">'LineWidth'</span><span class="op">,</span> <span class="fl">1.5</span>)<span class="op">;</span> </span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>    <span class="va">hold</span> <span class="va">on</span><span class="op">;</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> <span class="op">~</span><span class="va">isempty</span>(<span class="va">stateEvent</span>)</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>        <span class="va">plot3</span>(<span class="va">stateEvent</span>(<span class="fl">1</span>)<span class="op">,</span> <span class="va">stateEvent</span>(<span class="fl">2</span>)<span class="op">,</span> <span class="va">stateEvent</span>(<span class="fl">3</span>)<span class="op">,</span> <span class="ss">'ro'</span><span class="op">,</span> <span class="ss">'MarkerSize'</span><span class="op">,</span> <span class="fl">8</span><span class="op">,</span> <span class="ss">'LineWidth'</span><span class="op">,</span> <span class="fl">2</span>)<span class="op">;</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>        <span class="va">legend</span>(<span class="ss">'Trajectory'</span><span class="op">,</span><span class="ss">'Reentry Point'</span>)<span class="op">;</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    <span class="kw">else</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>        <span class="va">legend</span>(<span class="ss">'Trajectory'</span>)<span class="op">;</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>    <span class="kw">end</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>    <span class="va">xlabel</span>(<span class="ss">'x [m]'</span>)<span class="op">;</span> <span class="va">ylabel</span>(<span class="ss">'y [m]'</span>)<span class="op">;</span> <span class="va">zlabel</span>(<span class="ss">'z [m]'</span>)<span class="op">;</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>    <span class="va">title</span>(<span class="ss">'Spacecraft Deorbiting Under Drag'</span>)<span class="op">;</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>    <span class="va">grid</span> <span class="va">on</span><span class="op">;</span> <span class="va">axis</span> <span class="va">equal</span><span class="op">;</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>    <span class="co">%% Plot altitude vs time</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>    <span class="va">alt</span> <span class="op">=</span> <span class="va">sqrt</span>(<span class="va">state</span>(<span class="op">:,</span><span class="fl">1</span>)<span class="op">.^</span><span class="fl">2</span> <span class="op">+</span> <span class="va">state</span>(<span class="op">:,</span><span class="fl">2</span>)<span class="op">.^</span><span class="fl">2</span> <span class="op">+</span> <span class="va">state</span>(<span class="op">:,</span><span class="fl">3</span>)<span class="op">.^</span><span class="fl">2</span>) <span class="op">-</span> <span class="va">Re</span><span class="op">;</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>    <span class="va">figure</span><span class="op">;</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>    <span class="va">plot</span>(<span class="va">t</span><span class="op">/</span><span class="fl">86400</span><span class="op">,</span> <span class="va">alt</span><span class="op">/</span><span class="fl">1000</span><span class="op">,</span> <span class="ss">'LineWidth'</span><span class="op">,</span><span class="fl">1.5</span>)<span class="op">;</span></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>    <span class="va">xlabel</span>(<span class="ss">'Time [days]'</span>)<span class="op">;</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>    <span class="va">ylabel</span>(<span class="ss">'Altitude [km]'</span>)<span class="op">;</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>    <span class="va">title</span>(<span class="ss">'Altitude Decay Over Time'</span>)<span class="op">;</span></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>    <span class="va">grid</span> <span class="va">on</span><span class="op">;</span></span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a><span class="co">%% ODE function</span></span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="va">dstatedt</span> <span class="op">=</span> <span class="va">odeEquations</span>(<span class="op">~,</span> <span class="va">state</span><span class="op">,</span> <span class="va">mu</span><span class="op">,</span> <span class="va">m</span><span class="op">,</span> <span class="va">Cd</span><span class="op">,</span> <span class="va">A</span><span class="op">,</span> <span class="va">Re</span>)</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>    <span class="va">r_vec</span> <span class="op">=</span> <span class="va">state</span>(<span class="fl">1</span><span class="op">:</span><span class="fl">3</span>)<span class="op">;</span></span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>    <span class="va">v_vec</span> <span class="op">=</span> <span class="va">state</span>(<span class="fl">4</span><span class="op">:</span><span class="fl">6</span>)<span class="op">;</span></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>    <span class="va">r</span> <span class="op">=</span> <span class="va">norm</span>(<span class="va">r_vec</span>)<span class="op">;</span></span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>    <span class="va">v</span> <span class="op">=</span> <span class="va">norm</span>(<span class="va">v_vec</span>)<span class="op">;</span></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>    <span class="co">% Gravitational accel</span></span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>    <span class="va">a_grav</span> <span class="op">=</span> <span class="op">-</span><span class="va">mu</span> <span class="op">/</span> <span class="va">r</span><span class="op">^</span><span class="fl">3</span> <span class="op">*</span> <span class="va">r_vec</span><span class="op">;</span></span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a>    <span class="co">% Altitude</span></span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a>    <span class="va">alt</span> <span class="op">=</span> <span class="va">r</span> <span class="op">-</span> <span class="va">Re</span><span class="op">;</span></span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a>    <span class="co">% Approximating GMAT's MSISE90 with F10.7=150</span></span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a>    <span class="va">rho0</span> <span class="op">=</span> <span class="fl">2.8e-10</span><span class="op">;</span>   <span class="co">% [kg/m^3] at 150 km, 2e-10</span></span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>    <span class="va">H</span>    <span class="op">=</span> <span class="fl">6e4</span><span class="op">;</span>     <span class="co">% scale height [m]</span></span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a>    <span class="va">rho</span> <span class="op">=</span> <span class="va">rho0</span> <span class="op">*</span> <span class="va">exp</span>(<span class="op">-</span>(<span class="va">alt</span> <span class="op">-</span> <span class="fl">150e3</span>)<span class="op">/</span><span class="va">H</span>)<span class="op">;</span></span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a>    <span class="co">% Drag accel</span></span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>    <span class="va">a_drag</span> <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span> <span class="op">*</span> <span class="va">Cd</span> <span class="op">*</span> <span class="va">A</span> <span class="op">/</span> <span class="va">m</span> <span class="op">*</span> <span class="va">rho</span> <span class="op">*</span> <span class="va">v</span> <span class="op">*</span> <span class="va">v_vec</span><span class="op">;</span></span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>    <span class="va">dstatedt</span> <span class="op">=</span> [<span class="va">v_vec</span><span class="op">;</span> <span class="va">a_grav</span> <span class="op">+</span> <span class="va">a_drag</span>]<span class="op">;</span></span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a><span class="co">%% Event function</span></span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> [<span class="va">value</span><span class="op">,</span> <span class="va">isterminal</span><span class="op">,</span> <span class="va">direction</span>] <span class="op">=</span> <span class="va">reentryEvent</span>(<span class="op">~,</span> <span class="va">state</span><span class="op">,</span> <span class="va">Re</span>)</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a>    <span class="va">r</span> <span class="op">=</span> <span class="va">norm</span>(<span class="va">state</span>(<span class="fl">1</span><span class="op">:</span><span class="fl">3</span>))<span class="op">;</span></span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a>    <span class="va">alt</span> <span class="op">=</span> <span class="va">r</span> <span class="op">-</span> <span class="va">Re</span><span class="op">;</span></span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>    <span class="va">value</span> <span class="op">=</span> <span class="va">alt</span> <span class="op">-</span> <span class="fl">120000</span><span class="op">;</span>  </span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a>    <span class="va">isterminal</span> <span class="op">=</span> <span class="fl">1</span><span class="op">;</span>       </span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a>    <span class="va">direction</span> <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">;</span>       </span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The propagation is achieved using the MATLAB ‘ode45’ solver, which solves the equations of motion over time. This simulation is continued until the satellite reaches the point of re-entry above the earth, namely 120 km of altitude, after which an event function is triggered to stop the propagation.</p>
 </section>
 <section id="step-2-generating-and-analyzing-data" class="level3">
