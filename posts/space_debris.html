@@ -192,7 +192,7 @@ window.Quarto = {
   </ul></li>
   <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
   <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion">Discussion</a></li>
-  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#conclusions" id="toc-conclusions" class="nav-link" data-scroll-target="#conclusions">Conclusions</a></li>
   </ul>
 </nav>
     </div>
@@ -243,9 +243,9 @@ window.Quarto = {
 
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>Space debris, also known as orbital debris, poses a significant threat to spacecraft in Earth’s orbit. These fragments—ranging from tiny paint chips to defunct satellites—travel at extremely high velocities and can cause damage or degraded performance upon impact. Understanding the likelihood and characteristics of such impacts is crucial for designing resilient spacecraft and ensuring mission success.</p>
-<p>In this project, we utilise stochastic simulation techniques to model and predict the probability of space debris impacting a 1U CubeSat in Low-Earth Orbit (LEO). Using <a href="https://www.esa.int/ESA_Multimedia/Images/2013/04/ESA_s_MASTER_software_tool">ESA’s MASTER</a> (Meteoroid and Space Debris Terrestrial Environment Reference) tool, realistic flux data is generated for both human-made debris and meteoroids. The satellite’s exposure is then simulated to these threats over time, analysing key metrics such as impact frequency, energy, and penetration risk.</p>
-<p>This blog post will walk you through the methodology, results, and implications of analysis, offering insights into how engineers and scientists can better prepare for the challenges of operating in an increasingly crowded orbital environment.</p>
+<p>Space debris, or orbital debris, is a serious threat to spacecraft in Earth orbit. These fragments, which may vary from almost invisible paint chips to defunct satellites, exist in orbits where they travel at exceptionally high speeds—fast enough to cause damage upon impact or severely compromise the performance of the affected spacecraft. It is essential to understand the probability and the nature of such impacts so that resilient spacecraft can be designed, leading to successful missions.</p>
+<p>We shall employ a stochastic simulation approach to model and predict the probability of space debris impacting a 1U CubeSat in Low-Earth Orbit (LEO) in this study. The <a href="https://www.esa.int/ESA_Multimedia/Images/2013/04/ESA_s_MASTER_software_tool">ESA’s MASTER</a> (Meteoroid and Space Debris Terrestrial Environment Reference) tool allows the generation of realistic flux data for human-made debris and meteoroids. The satellite has been subjected to these threats for a period of time, and the analysis will include such key metrics as impact frequency, energy, and penetration risk.</p>
+<p>This blog post will outline the methodology, results, and implications of the study to prepare engineering and scientific knowledge to address the challenges posed by operation in an increasingly congested orbital environment.</p>
 <hr>
 </section>
 <section id="methodology" class="level2">
@@ -276,7 +276,7 @@ window.Quarto = {
 <li><strong>Eccentricity:</strong> <span class="math inline">\(0.01\)</span></li>
 <li><strong>Cross-sectional area (drag):</strong> <span class="math inline">\(0.01281 \text{ m}^2\)</span></li>
 </ul>
-<p>The flux data provides estimates of the number of impacts per square meter per year, categorised by particle diameter and source type (human-made debris or meteoroids). This information serves as the foundation for our stochastic simulation.</p>
+<p>Flux data provides the estimates of impacts per square meter per year, the categorization done according to the particle’s diameter and source type (human-made debris or meteoroids). This information serves as the basis of our stochastic simulation.</p>
 </section>
 </section>
 <section id="generate-data-with-esas-master" class="level3">
@@ -301,11 +301,11 @@ window.Quarto = {
 </section>
 <section id="step-3-running-the-stochastic-simulation" class="level3">
 <h3 class="anchored" data-anchor-id="step-3-running-the-stochastic-simulation">Step 3: Running the Stochastic Simulation</h3>
-<p>Next, implement a discrete-event simulation using Python’s <code>simpy</code> library. The model incorporates several key components:</p>
+<p>Then, build a discrete-event simulation with the help of Python’s <code>simpy</code> library. It models some of the critical elements such as:</p>
 <ul>
-<li><strong>Orbital Parameters:</strong> Satellite altitude, inclination, eccentricity, etc.</li>
-<li><strong>Satellite Design Parameters:</strong> Cross-section, mass, material density, wall thickness, and attitude (e.g., nadir-pointing).</li>
-<li><strong>Impact Dynamics:</strong> Calculations for impact velocity, kinetic energy, and penetration risk based on the modified Cour-Palais ballistic limit equation.</li>
+<li><strong>Orbital Parameters:</strong> Satellite altitude, its inclination, eccentricity and the like.</li>
+<li><strong>Satellite Design Parameters:</strong> Cross-section, mass, material density, wall thickness and attitude (e.g.&nbsp;nadir-pointing).</li>
+<li><strong>Impact Dynamics:</strong> Impact velocity and penetration risk are calculated with the modified Cour-Palais ballistic limit equation for kinetic energy and impact velocity calculations.</li>
 </ul>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> simpy</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -435,14 +435,14 @@ window.Quarto = {
 <span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a>    env.run(until<span class="op">=</span>duration_hours)</span>
 <span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> sat.impacts</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>The simulation proceeds as follows:</p>
+<p>The simulation works like this:</p>
 <ol type="1">
-<li>For each time step, it determines whether the next impact comes from human-made debris or meteoroids.</li>
-<li>It randomly selects a particle diameter based on the flux distribution.</li>
-<li>It calculates the impact velocity, energy, and potential for wall penetration.</li>
-<li>The process repeats until the specified simulation duration is reached.</li>
+<li>At each time step, whether the next impact results from human-made debris or meteoroids is determined.</li>
+<li>Select a random particle size according to the flux distribution.</li>
+<li>Calculate the impact velocity, energy, and the potential for wall penetration.</li>
+<li>It goes on until the given simulation time has been fulfilled.</li>
 </ol>
-<p>The simulation simulates debris impacts over one year.</p>
+<p>The simulation simulates impacts of debris for one year.</p>
 <hr>
 </section>
 
@@ -474,13 +474,13 @@ window.Quarto = {
 </section>
 <section id="discussion" class="level2">
 <h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
-<p>The simulation demonstrates the dynamic interplay between particle size, velocity, and impact energy. While most impacts involve harmless microparticles, even rare collisions with larger objects can have severe consequences. Engineers must therefore prioritise shielding strategies and redundancy measures when designing spacecraft for LEO missions.</p>
-<p>Additionally, the near-equal contribution of human-made debris and meteoroids highlights the importance of addressing both natural and artificial threats. Efforts to mitigate space debris—such as active removal initiatives and stricter regulations on satellite disposal—are essential for safeguarding future missions.</p>
+<p>The simulation investigated varying interactions among particle size, particle speed, and impact energy. Most impacts involve benign microsized particles, and when larger objects are involved, even rare impacts can wreak havoc. Thus, the designer of any LEO-leading mission will have to concentrate on shielding measures and redundancy.</p>
+<p>Furthermore, the near-equal ranking of discarded satellites and meteoroids impels one to look at both natural and anthropogenic threats. Important efforts for diminishing space debris, including active removal campaigns and stringent disposal satellite regulations, are vital to defend future missions.</p>
 <hr>
 </section>
-<section id="conclusion" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>This project underscores the value of stochastic simulations in assessing space debris risks. By combining real-world flux data with advanced modeling techniques, we gain valuable insights into the challenges faced by spacecraft in LEO. As humanity continues to explore and utilise outer space, tools like these will play a vital role in ensuring safe and sustainable operations.</p>
+<section id="conclusions" class="level2">
+<h2 class="anchored" data-anchor-id="conclusions">Conclusions</h2>
+<p>This project shows the importance of stochastic simulations of debris risk assessment. Real flux data in combination with advanced modeling give an insight into the very real hurdles being faced by spacecraft in LEO. As humanity starts to navigate and utilize outer space, tools like this will play an important role in safe and sustainable operation.</p>
 
 
 </section>

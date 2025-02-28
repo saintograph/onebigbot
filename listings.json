@@ -2,6 +2,7 @@
   {
     "listing": "/blog.html",
     "items": [
+      "/posts/deorbit_matlab.html",
       "/posts/sunlight_exposure.html",
       "/posts/ground_station_coverage.html",
       "/posts/space_debris.html",

@@ -167,7 +167,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a>
   <ul class="collapse">
-  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways">Key Takeaways:</a></li>
+  <li><a href="#major-points" id="toc-major-points" class="nav-link" data-scroll-target="#major-points">Major Points:</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -223,8 +223,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>Understanding the sunlight and eclipse periods of a satellite is crucial for mission planning, particularly for power management and thermal control. Satellites rely on solar energy for operation, but when they pass through Earth’s shadow, onboard batteries must provide power. The frequency and duration of these eclipses depend on the satellite’s orbit.</p>
-<p>This blog post explores how to determine sunlight and eclipse durations for a satellite using Python and the <code>Skyfield</code> library. We analyse a Sun-Synchronous Orbit (SSO) with varying Right Ascension of the Ascending Node (RAAN) values and compute the total sunlight and eclipse hours over 31 days (744 hours).</p>
+<p>It is critical for mission planning to know the times for eclipse and sunlight for power management and thermal control missions. Solar-powered satellites draw energy whenever they are out of sunlight because onboard batteries will sustain power during an eclipse while in the shadow of the Earth. The actual frequency and time duration of eclipses can change according to the orbit of the satellite.</p>
+<p>This blog post is based on the computation of sunlight and eclipse hours for a satellite using Python and the Skyfield library. A Sun-Synchronous Orbit with varying Right Ascension of the Ascending Node (RANN) values and computing the aggregate sunlight and eclipse hours for 31 days (744 hours) will done.</p>
 </section>
 <section id="methodology" class="level2">
 <h2 class="anchored" data-anchor-id="methodology">Methodology</h2>
@@ -274,7 +274,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="step-2-computing-sunlight-and-eclipse-durations" class="level3">
 <h3 class="anchored" data-anchor-id="step-2-computing-sunlight-and-eclipse-durations">Step 2: Computing Sunlight and Eclipse Durations</h3>
-<p>To determine when the satellite is in eclipse, use Skyfield to check whether the satellite is illuminated by the Sun. The function below calculates the total duration of sunlight and eclipse over a one-month period:</p>
+<p>Using Skyfield, determine if the satellite is illuminated by the Sun in order to find out when it is in eclipse. The function calculates the total period of sunlight and eclipse for one month.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> skyfield.searchlib <span class="im">import</span> find_discrete</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> total_eclipse_sunlight(satellite):</span>
@@ -315,7 +315,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="step-3-running-the-analysis-for-different-raan-values" class="level3">
 <h3 class="anchored" data-anchor-id="step-3-running-the-analysis-for-different-raan-values">Step 3: Running the Analysis for Different RAAN Values</h3>
-<p>The Right Ascension of the Ascending Node (RAAN) affects the orbit’s orientation relative to the Sun, influencing the eclipse duration. Analyse three different RAAN values:</p>
+<p>The responsible factor for influencing eclipse duration is the position of the right ascension of the ascending node (RAAN) with respect to the orientation of the orbit concerning the Sun; there are three values possible for RAAN:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>raan_values <span class="op">=</span> [<span class="fl">50.0</span>, <span class="fl">120.0</span>, <span class="fl">240.0</span>]</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> raan <span class="kw">in</span> raan_values:</span>
@@ -358,25 +358,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="observations" class="level3">
 <h3 class="anchored" data-anchor-id="observations">Observations</h3>
 <ul>
-<li>The total time in <strong>eclipse varies significantly with RAAN</strong>, ranging from <strong>217.73 to 278.24 hours</strong> over the month.</li>
-<li><strong>RAAN = 120° experiences the most eclipse time</strong> (278.24 hours), while <strong>RAAN = 50° has the least</strong> (217.73 hours).</li>
-<li>The difference of <strong>over 60 hours of eclipse per month</strong> between RAAN values highlights how orbital orientation affects sunlight exposure.</li>
-<li>These eclipse durations correspond to an <strong>average eclipse duration per orbit</strong> of approximately <strong>27 to 35 minutes</strong>, though individual eclipses may be longer or shorter.</li>
+<li>The total excursion in <strong>eclipse lies under RAAN</strong> and varies substantially and in a given month could range from <strong>217.73 to 278.24 hours</strong>.</li>
+<li><strong>Maximum eclipse time</strong> is a recorded observation when <strong>RAAN = 120°,</strong> which goes to <strong>minimum for RAAN = 50° (217.73 hours)</strong>.</li>
+<li>It implies an almost 60-hour difference in eclipse per month with respect to the RAAN, evidencing the dependence of the sunlight exposure on the orbit orientation.</li>
+<li>These eclipse durations give an <strong>average eclipse duration per orbit somewhere around 27 to 35 minutes</strong>, while the duration for each might be longer or shorter.</li>
 </ul>
 </section>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>This analysis demonstrates how to compute <strong>sunlight and eclipse durations</strong> for satellites using <strong>Python and Skyfield</strong>. Eclipse predictions are crucial for <strong>power management</strong>, <strong>thermal control</strong>, and overall satellite <strong>mission planning</strong>.</p>
-<section id="key-takeaways" class="level3">
-<h3 class="anchored" data-anchor-id="key-takeaways">Key Takeaways:</h3>
+<p>An analysis describing the computation of sunlight and eclipse durations experienced by satellites using Python and Skyfield is given. Indeed, eclipse prediction becomes a critical measure in power management, thermal control, and most importantly, general mission planning for the satellite.</p>
+<section id="major-points" class="level3">
+<h3 class="anchored" data-anchor-id="major-points">Major Points:</h3>
 <ul>
-<li><strong>Satellites experience periodic eclipses</strong>, requiring battery-powered operation during shadow periods.</li>
-<li><strong>RAAN affects the total eclipse duration</strong>, but variations are generally small for Sun-Synchronous Orbits.</li>
-<li><strong>Python and Skyfield provide powerful tools</strong> for analyzing orbital illumination conditions.</li>
-<li><strong>Mission planners must optimize battery storage and solar panel efficiency</strong> to ensure uninterrupted operation during eclipse phases.</li>
+<li>Periods of <strong>shadow are experienced by satellites</strong>, thus requiring them to fly battery-powered.</li>
+<li><strong>Total eclipse duration</strong> is affected by RAAN, but small variations can generally found for Sun-Synchronous Orbits.</li>
+<li><strong>Python and Skyfield provide powerful open-source tools</strong> to analyze orbital illumination conditions.</li>
+<li><strong>Mission planners need to optimize battery storage and solar panel efficiency</strong> to ensure that operations are continuous through eclipse phases.</li>
 </ul>
-<p>By understanding eclipse patterns, engineers can <strong>design resilient power systems</strong> for satellites, ensuring they remain operational even during extended shadow periods.</p>
+<p>By understanding the eclipse patterns, engineers can describe as well as design resilient power systems for satellites that continue functional even during long shadow periods.</p>
 
 
 </section>

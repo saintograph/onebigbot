@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Winfred">
-<meta name="dcterms.date" content="2025-02-25">
-<meta name="description" content="Getting satellite coverage for a network of ground stations">
+<meta name="dcterms.date" content="2025-02-28">
+<meta name="description" content="Simulating Deorbiting with GMAT for a LEO Satellite">
 
-<title>Ground Station Coverage Analysis for Satellites – OneBigBot</title>
+<title>Deorbiting simulation with Matlab – OneBigBot</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,40 +22,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -104,6 +70,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../styles.css">
 </head>
@@ -156,18 +151,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
   <li><a href="#methodology" id="toc-methodology" class="nav-link" data-scroll-target="#methodology">Methodology</a>
   <ul class="collapse">
-  <li><a href="#step-1-data-preparation" id="toc-step-1-data-preparation" class="nav-link" data-scroll-target="#step-1-data-preparation">Step 1: Data Preparation</a></li>
-  <li><a href="#step-2-visualising-ground-station-locations" id="toc-step-2-visualising-ground-station-locations" class="nav-link" data-scroll-target="#step-2-visualising-ground-station-locations">Step 2: Visualising Ground Station Locations</a></li>
-  <li><a href="#step-3-orbit-parameters-and-mean-motion" id="toc-step-3-orbit-parameters-and-mean-motion" class="nav-link" data-scroll-target="#step-3-orbit-parameters-and-mean-motion">Step 3: Orbit Parameters and Mean Motion</a></li>
-  <li><a href="#step-4-generating-tles" id="toc-step-4-generating-tles" class="nav-link" data-scroll-target="#step-4-generating-tles">Step 4: Generating TLEs</a></li>
-  <li><a href="#step-5-visibility-analysis" id="toc-step-5-visibility-analysis" class="nav-link" data-scroll-target="#step-5-visibility-analysis">Step 5: Visibility Analysis</a></li>
-  <li><a href="#step-6-visualising-satellite-passes" id="toc-step-6-visualising-satellite-passes" class="nav-link" data-scroll-target="#step-6-visualising-satellite-passes">Step 6: Visualising Satellite Passes</a></li>
+  <li><a href="#step-1-setting-up-the-matlab-simulation" id="toc-step-1-setting-up-the-matlab-simulation" class="nav-link" data-scroll-target="#step-1-setting-up-the-matlab-simulation">Step 1: Setting Up the MATLAB Simulation</a></li>
+  <li><a href="#step-2-generating-and-analyzing-data" id="toc-step-2-generating-and-analyzing-data" class="nav-link" data-scroll-target="#step-2-generating-and-analyzing-data">Step 2: Generating and Analyzing Data</a></li>
+  <li><a href="#step-3-visualizing-results" id="toc-step-3-visualizing-results" class="nav-link" data-scroll-target="#step-3-visualizing-results">Step 3: Visualizing Results</a></li>
   </ul></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
-  <ul class="collapse">
-  <li><a href="#summary-statistics" id="toc-summary-statistics" class="nav-link" data-scroll-target="#summary-statistics">Summary Statistics</a></li>
-  <li><a href="#observations" id="toc-observations" class="nav-link" data-scroll-target="#observations">Observations</a></li>
-  </ul></li>
+  <li><a href="#results-and-implications" id="toc-results-and-implications" class="nav-link" data-scroll-target="#results-and-implications">Results and Implications</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
@@ -177,18 +165,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Ground Station Coverage Analysis for Satellites</h1>
+<h1 class="title">Deorbiting simulation with Matlab</h1>
   <div class="quarto-categories">
     <div class="quarto-category">satellite</div>
-    <div class="quarto-category">Poliastro</div>
-    <div class="quarto-category">Skyfield</div>
-    <div class="quarto-category">Python</div>
+    <div class="quarto-category">space debris</div>
+    <div class="quarto-category">simulation</div>
+    <div class="quarto-category">Matlab</div>
   </div>
   </div>
 
 <div>
   <div class="description">
-    Getting satellite coverage for a network of ground stations
+    Simulating Deorbiting with GMAT for a LEO Satellite
   </div>
 </div>
 
@@ -205,7 +193,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 25, 2025</p>
+      <p class="date">February 28, 2025</p>
     </div>
   </div>
   
@@ -217,259 +205,54 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><img src="./images/radio_telescope.jpg" class="img-fluid"> <em>credit: Photo by <a href="https://unsplash.com/@stewi">Stephan Widua</a> on <a href="https://unsplash.com/photos/white-satellite-dish-under-blue-sky-during-night-time-3YAIvBNlZM4">Unsplash</a></em></p>
-<section id="code-can-be-found-here" class="level4">
-<h4 class="anchored" data-anchor-id="code-can-be-found-here">Code can be found <a href="https://gist.github.com/saintograph/37610e7301265982373b48254f08e964">here</a></h4>
-</section>
+<p>Code can be found <a href="https://gist.github.com/saintograph/cf76f36b60c52c9e26a986872ebae0c8">here</a></p>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>The Visibility of Satellites through Ground Stations Impact on Relationships between Reliable Communications with Satellite Missions and Efficiency of Data Flow analysis coverage herein investigates the visibility coverage for a given satellite constellation from several ground stations around the world, particularly the northern and southern polar regions.</p>
-<p>Orbit design determines how long and how often the particular satellite will communicate with the ground station. Modeling passes using Two-Line Elements (TLEs) and calculating time each satellite spends over a station would give insight into communication durations and global coverage patterns.</p>
-<p>This post describes the method, results, and implications of the analysis that can provide a means for engineers and scientists on optimizing ground station networks for reliable communications and data relay for satellite missions.</p>
+<p>This blog post is about the orbital decay simulation of a satellite with atmospheric drag in MATLAB. The script provides insight into the deorbiting process by simulating the trajectory of the satellite, calculating re-entry times, and visualizing several parameters, including how altitude decays with time.</p>
+<hr>
 </section>
 <section id="methodology" class="level2">
 <h2 class="anchored" data-anchor-id="methodology">Methodology</h2>
-<section id="step-1-data-preparation" class="level3">
-<h3 class="anchored" data-anchor-id="step-1-data-preparation">Step 1: Data Preparation</h3>
-<p>The ground station data must be loaded from a CSV file that contains this data:</p>
+<section id="step-1-setting-up-the-matlab-simulation" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-setting-up-the-matlab-simulation">Step 1: Setting Up the MATLAB Simulation</h3>
+<p>The initial conditions and properties of the spacecraft are defined at the start in the MATLAB script.</p>
 <ul>
-<li>Name: This is given as the name for the ground station.</li>
-<li>Latitude and Longitude: They’re the geographical coordinates of the station.</li>
-<li>Region: The indicator tells if the station is located in the northern hemisphere or in the southern hemisphere.</li>
+<li><strong>Gravitational Parameter (<code>mu</code>):</strong> <span class="math inline">\(3.986 \times 10^{14} \, \text{m}^3/\text{s}^2\)</span></li>
+<li><strong>Earth’s Radius (<code>Re</code>):</strong> <span class="math inline">\(6,378 \, \text{km}\)</span></li>
+<li><strong>Spacecraft Mass:</strong> <span class="math inline">\(3 \, \text{kg}\)</span></li>
+<li><strong>Drag Coefficient (<code>Cd</code>):</strong> <span class="math inline">\(2.2\)</span></li>
+<li><strong>Cross-sectional Area for Drag:</strong> <span class="math inline">\(0.01281 \, \text{m}^2\)</span></li>
 </ul>
-<p>Here is a small sample of the dataset:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 32%">
-<col style="width: 11%">
-<col style="width: 12%">
-<col style="width: 8%">
-<col style="width: 35%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Latitude</th>
-<th>Longitude</th>
-<th>Region</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Svalbard Satellite Station</td>
-<td>78.229</td>
-<td>15.408</td>
-<td>North</td>
-<td>Kongsberg Satellite Services</td>
-</tr>
-<tr class="even">
-<td>North Pole Station</td>
-<td>64.800</td>
-<td>-147.650</td>
-<td>North</td>
-<td>Swedish Space Corporation</td>
-</tr>
-<tr class="odd">
-<td>Awarua</td>
-<td>-46.530</td>
-<td>168.380</td>
-<td>South</td>
-<td>ATLAS Space Operations</td>
-</tr>
-<tr class="even">
-<td>Western Australia Space Center</td>
-<td>-29.010</td>
-<td>115.340</td>
-<td>South</td>
-<td>Swedish Space Corporation (SSC)</td>
-</tr>
-<tr class="odd">
-<td>AU-01</td>
-<td>-32.960</td>
-<td>138.850</td>
-<td>South</td>
-<td>Leaf Space</td>
-</tr>
-<tr class="even">
-<td>Santiago Satellite Station</td>
-<td>-33.133</td>
-<td>-70.667</td>
-<td>South</td>
-<td>Swedish Space Corporation (SSC)</td>
-</tr>
-<tr class="odd">
-<td>Belo Horizonte</td>
-<td>-19.861</td>
-<td>-44.619</td>
-<td>South</td>
-<td>New</td>
-</tr>
-<tr class="even">
-<td>Tahiti, French Polynesia</td>
-<td>-17.630</td>
-<td>-149.600</td>
-<td>South</td>
-<td>ATLAS Space Operations</td>
-</tr>
-<tr class="odd">
-<td>Capetown</td>
-<td>-33.951</td>
-<td>18.459</td>
-<td>South</td>
-<td>New</td>
-</tr>
-<tr class="even">
-<td>Toliara</td>
-<td>-23.375</td>
-<td>43.689</td>
-<td>South</td>
-<td>New</td>
-</tr>
-</tbody>
-</table>
+<p>The satellite’s initial position and velocity are specified in meters and meters per second: - <strong>Initial Position (X, Y, Z):</strong> <span class="math inline">\((4.211560342267748 \times 10^{-13}, 6878 \, \text{km}, 0)\)</span> - <strong>Initial Velocity (VX, VY, VZ):</strong> <span class="math inline">\((0.9541223000883489, -5.842314103991534 \times 10^{-17}, 7.552655699128404)\)</span></p>
+<p>There are forces in a simulation such as: - The gravitational force is computed according to Newton’s law of gravitation. - The atmospheric drag is modeled based on altitude, velocity, and density of the atmosphere. The density shows a pattern of exponential decay in terms of a standard reference value at an altitude of 150 km and the scale height of 60 km.</p>
+<p>The propagation is achieved using the MATLAB ‘ode45’ solver, which solves the equations of motion over time. This simulation is continued until the satellite reaches the point of re-entry above the earth, namely 120 km of altitude, after which an event function is triggered to stop the propagation.</p>
 </section>
-<section id="step-2-visualising-ground-station-locations" class="level3">
-<h3 class="anchored" data-anchor-id="step-2-visualising-ground-station-locations">Step 2: Visualising Ground Station Locations</h3>
-<p>Using <code>matplotlib</code> and <code>geopandas</code>, plot the global distribution of ground stations on a world map. Stations in the northern hemisphere are marked in red, while those in the southern hemisphere are marked in blue. Each station is annotated with its name for clarity.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="./images/global_distribution.png" class="img-fluid figure-img"></p>
-<figcaption>Global Distribution of Satellite Ground Stations</figcaption>
-</figure>
-</div>
-<p><strong>Summary Statistics:</strong></p>
-<ul>
-<li><strong>North Region:</strong>
-<ul>
-<li>Number of stations: 2<br>
-</li>
-<li>Average latitude: 71.51°<br>
-</li>
-<li>Minimum latitude: 64.80°<br>
-</li>
-<li>Maximum latitude: 78.23°</li>
-</ul></li>
-<li><strong>South Region:</strong>
-<ul>
-<li>Number of stations: 8<br>
-</li>
-<li>Average latitude: -29.56°<br>
-</li>
-<li>Minimum latitude: -46.53°<br>
-</li>
-<li>Maximum latitude: -17.63°</li>
-</ul></li>
-</ul>
+<section id="step-2-generating-and-analyzing-data" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-generating-and-analyzing-data">Step 2: Generating and Analyzing Data</h3>
+<p>Once the simulation is completed, some result values are returned by the script, which include: - <strong>Re-entry Time:</strong> The time (in days and years) when the satellite reaches the re-entry altitude. - <strong>Re-entry Altitude:</strong> The altitude at which re-entry occurs. - <strong>Trajectory Visualization:</strong> A 3D plot of the satellite’s path around Earth with the re-entry point-visible. - <strong>Altitude Decay Profile:</strong> The time-altitude plot illustrating how altitude decreases over time for a satellite.</p>
+<p>The script may return:</p>
+<pre><code>Reentry reached at t = 3456.78 days (9.47 years)
+Reentry altitude = 119995.23 meters</code></pre>
 </section>
-<section id="step-3-orbit-parameters-and-mean-motion" class="level3">
-<h3 class="anchored" data-anchor-id="step-3-orbit-parameters-and-mean-motion">Step 3: Orbit Parameters and Mean Motion</h3>
-<p>The satellite used in this analysis is in a Sun-Synchronous Orbit (SSO) with the following parameters:</p>
-<ul>
-<li><strong>Semi-major axis:</strong> 6878 km (500 km altitude)</li>
-<li><strong>Eccentricity:</strong> 0.01<br>
-</li>
-<li><strong>Inclination:</strong> 97.2°<br>
-</li>
-<li><strong>Right Ascension of the Ascending Node (RAAN):</strong> 90°<br>
-</li>
-<li><strong>Argument of Perigee:</strong> 0°<br>
-</li>
-<li><strong>True Anomaly:</strong> 0°</li>
-</ul>
-<p>The mean motion of the satellite is calculated as <strong>15.21982 revolutions per day</strong>, which determines how frequently the satellite revisits specific regions.</p>
-</section>
-<section id="step-4-generating-tles" class="level3">
-<h3 class="anchored" data-anchor-id="step-4-generating-tles">Step 4: Generating TLEs</h3>
-<p>To simulate satellite passes, generate a Two-Line Element (TLE) set for the satellite. The TLE format is widely used for orbital prediction and includes essential orbital elements such as inclination, RAAN, eccentricity, and mean motion.</p>
-<p>Example TLE:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>1 99999U 2520250.000000 .00000000 00000-0 00000-0 0 0000</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>2 99999 97.2000 0.0000 0010000 0.0000 0.0000 15.21982000 00000</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="step-5-visibility-analysis" class="level3">
-<h3 class="anchored" data-anchor-id="step-5-visibility-analysis">Step 5: Visibility Analysis</h3>
-<p>Using the <code>skyfield</code> library, calculate the visibility of the satellite from each ground station over a 24-hour period. Key metrics include:</p>
-<ul>
-<li><strong>Rise Time:</strong> When the satellite rises above the horizon.</li>
-<li><strong>Culmination Time:</strong> When the satellite reaches its highest point in the sky.</li>
-<li><strong>Set Time:</strong> When the satellite sets below the horizon.</li>
-<li><strong>Duration:</strong> Total time the satellite is visible during a pass.</li>
-</ul>
-<p>For example, the <strong>Svalbard Satellite Station</strong> experienced the following passes:</p>
-<ul>
-<li><strong>Pass 1:</strong>
-<ul>
-<li>Rise: 2025-01-18T21:08:27Z<br>
-</li>
-<li>Culmination: 2025-01-18T21:12:10Z<br>
-</li>
-<li>Set: 2025-01-18T21:15:54Z<br>
-</li>
-<li>Duration: 7.44 minutes</li>
-</ul></li>
-<li><strong>Pass 2:</strong>
-<ul>
-<li>Rise: 2025-01-18T22:43:02Z<br>
-</li>
-<li>Culmination: 2025-01-18T22:46:26Z<br>
-</li>
-<li>Set: 2025-01-18T22:49:51Z<br>
-</li>
-<li>Duration: 6.81 minutes</li>
-</ul></li>
-</ul>
-</section>
-<section id="step-6-visualising-satellite-passes" class="level3">
-<h3 class="anchored" data-anchor-id="step-6-visualising-satellite-passes">Step 6: Visualising Satellite Passes</h3>
-<p>Visualise the satellite passes over all ground stations using a horizontal timeline plot. Each line represents a ground station, with markers indicating rise, culmination, and set times.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="./images/satellite_passes.png" class="img-fluid figure-img"></p>
-<figcaption>Satellite Passes Over Ground Stations</figcaption>
-</figure>
-</div>
+<section id="step-3-visualizing-results" class="level3">
+<h3 class="anchored" data-anchor-id="step-3-visualizing-results">Step 3: Visualizing Results</h3>
+<p>The script produces two important plots: 1. <strong>3D Trajectory Plot:</strong> This shows a spiraling trajectory of the satellite heading toward Earth as it re-enters. 2. <strong>Altitude vs Time Plot:</strong> It shows the orbit is decaying continuously due to atmospheric drag, with greater acceleration coming from denser layers of atmosphere as the satellite descends.</p>
+<p>Both plots provide insights into the process of deorbiting and a confidence check for simulation accuracy.</p>
+<p><img src="images/matlab_deorbit.jpg" class="img-fluid"></p>
+<hr>
 </section>
 </section>
-<section id="results" class="level2">
-<h2 class="anchored" data-anchor-id="results">Results</h2>
-<section id="summary-statistics" class="level3">
-<h3 class="anchored" data-anchor-id="summary-statistics">Summary Statistics</h3>
-<p>The analysis provides detailed statistics for each ground station, including the number of passes, average duration, and minimum/maximum durations. Here are some highlights:</p>
-<ul>
-<li><strong>Svalbard Satellite Station:</strong>
-<ul>
-<li>Number of passes: 10<br>
-</li>
-<li>Average duration: 6.73 minutes<br>
-</li>
-<li>Minimum duration: 4.98 minutes<br>
-</li>
-<li>Maximum duration: 7.44 minutes</li>
-</ul></li>
-<li><strong>Tahiti, French Polynesia:</strong>
-<ul>
-<li>Number of passes: 3<br>
-</li>
-<li>Average duration: 5.47 minutes<br>
-</li>
-<li>Minimum duration: 3.91 minutes<br>
-</li>
-<li>Maximum duration: 7.11 minutes</li>
-</ul></li>
-</ul>
-</section>
-<section id="observations" class="level3">
-<h3 class="anchored" data-anchor-id="observations">Observations</h3>
-<ul>
-<li>Ground stations in higher latitudes, such as <strong>Svalbard</strong> and the <strong>North Pole Station</strong>, experience more frequent and longer satellite passes due to the near-polar inclination of the orbit.</li>
-<li>Mid-latitude stations, such as <strong>Belo Horizonte</strong> and <strong>Capetown</strong>, provide complementary coverage, ensuring continuous communication opportunities.</li>
-</ul>
-</section>
+<section id="results-and-implications" class="level2">
+<h2 class="anchored" data-anchor-id="results-and-implications">Results and Implications</h2>
+<p>In the simulation the atmospheric drag had a profound influence on the orbital decay of LEO satellites. Findings include the following: - <strong>Predictable Re-entry Timeline:</strong> The script predicts accurately the time when the satellite enters the atmosphere of Earth. This provides a clear re-entry timeline for the mission planners. - <strong>Drag Parameters Matter:</strong> A change in either the drag coefficient or area can have significant effects on the deorbiting timeline, thus emphasizing the need for accurate modeling. - <strong>Useful Visualization Tools:</strong> The 3D trajectory and altitude decay plots are intuitive and provide a means for understanding and conveying the process of deorbiting.</p>
+<p>These insights would assist in the responsible disposal of satellites and the reduced risk of space debris, thus promoting compliance with international guidelines.</p>
+<hr>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>The well-placed ground stations support satellite visibility and data-link throughput. Ground stations at high latitudes are very important since they tend to provide frequent communication windows, while stations at mid-latitudes provide further opportunities toward global coverage.</p>
-<p>Optimisation of the ground station network based on this knowledge will enhance mission operators’ ability to ensure reliable communications and efficient data relay in support of the operational requirements of satellite missions positioned in a congested orbital environment.</p>
+<p>The process of simulating a satellite deorbiting with MATLAB holds considerable value in understanding how atmospheric drag affects orbital decay. By modeling the forces on the satellite and visualizing its trajectory, engineers and scientists can safely design missions and help create a sustainable orbital environment.</p>
+<p>This script is a basis for further studies, such as incorporating solar activity effects, simulating different designs of spacecraft, and investigating active deorbiting methods.</p>
+<p>Feel free to experiment with the script and modify it to your needs!</p>
 
 
 </section>
