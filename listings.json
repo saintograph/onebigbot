@@ -2,6 +2,7 @@
   {
     "listing": "/blog.html",
     "items": [
+      "/posts/remote_sensing_image_analysis.html",
       "/posts/deorbit_matlab.html",
       "/posts/sunlight_exposure.html",
       "/posts/ground_station_coverage.html",
