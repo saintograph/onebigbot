@@ -2,6 +2,7 @@
   {
     "listing": "/blog.html",
     "items": [
+      "/posts/direct_transfer_orbit_earth_venus.html",
       "/posts/remote_sensing_image_analysis.html",
       "/posts/deorbit_matlab.html",
       "/posts/sunlight_exposure.html",

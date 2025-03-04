@@ -14,144 +14,18 @@
     "text": "The Grand Canyon is not merely a geological wonder; it is actually a living laboratory in the investigation of how both water and vegetation survived in one of the most arid places on earth. Dryness and the changing patterns of climate have made it even more critical to monitor these vulnerable ecosystems. But how do you monitor such sparse desert vegetation or ephemeral sources of water over such vast, rugged terrain? The answer lies in the skies: satellite imagery.\nIn this project, Sentinel-2’s satellite data is used to detect water and vegetation in the Grand Canyon. The high-resolution bands of Sentinel-2—for example, near-infrared (NIR) and shortwave infrared (SWIR)—are the best ones to capture subtle ecological traits that cannot be seen with the naked eye. By calculating indices such as the Normalized Difference Water Index (NDWI) and Normalized Difference Vegetation Index (NDVI), oases and greenery hidden within the maze of red rock that comprises the canyon is mapped out.\nimport numpy as np\nimport rasterio\nimport matplotlib.pyplot as plt\nimport matplotlib.patches as patches\nfrom skimage import measure\n\ntrue_color_path = \"image_data_path/2019-11-04-00_00_2019-11-04-23_59_Sentinel-2_L2A_True_color.tiff\"\ngreen_path = \"image_data_path/2019-11-04-00_00_2019-11-04-23_59_Sentinel-2_L2A_B03_(Raw).tiff\"\nnir_path   = \"image_data_path/2019-11-04-00_00_2019-11-04-23_59_Sentinel-2_L2A_B08_(Raw).tiff\"\nred_path   = \"image_data_path/2019-11-04-00_00_2019-11-04-23_59_Sentinel-2_L2A_B04_(Raw).tiff\"\n\nwith rasterio.open(true_color_path) as src:\n    true_color = src.read([1, 2, 3]).transpose(1, 2, 0)\n\nwith rasterio.open(green_path) as src:  # B03 (Green)\n    green = src.read(1).astype(float)\nwith rasterio.open(nir_path) as src:    # B08 (NIR)\n    nir = src.read(1).astype(float)\nwith rasterio.open(red_path) as src:    # B04 (Red)\n    red = src.read(1).astype(float)\n\n# Get indices\nndwi = (green - nir) / (green + nir + 1e-6)  # NDWI for water\nndvi = (nir - red) / (nir + red + 1e-6)      # NDVI for vegetation\n\nwater_mask = ndwi &gt; 0.05\ngreenery_mask = ndvi &gt; 0.43\n\n# Smoothing to reduce noise\nfrom skimage.filters import gaussian\n\nwater_mask = gaussian(water_mask, sigma=1) &gt; 0.5\ngreenery_mask = gaussian(greenery_mask, sigma=1) &gt; 0.5\n\nfig, ax = plt.subplots(figsize=(10, 10))\nax.imshow(true_color / true_color.max())\nax.set_title('Grand Canyon: Water (Blue) & Vegetation (Green)')\n\nfor contour in measure.find_contours(water_mask, level=0.5):\n    contour_coords = np.fliplr(contour)\n    poly = patches.Polygon(contour_coords, closed=True, fill=False, edgecolor='blue', linewidth=1)\n    ax.add_patch(poly)\n\nfor contour in measure.find_contours(greenery_mask, level=0.5):\n    contour_coords = np.fliplr(contour)\n    poly = patches.Polygon(contour_coords, closed=True, fill=False, edgecolor='green', linewidth=1)\n    ax.add_patch(poly)\n\nplt.show()\n\n\nThe water is not made of enormous lakes, but made up of short puddles or meandering channels, and vegetation sparsely hangs by in patches and blends into the rocky background. NDWI and NDVI, originally set for lush conditions, fail here. For example, a water threshold of 0.11 would work in the temperate zones, but it’s reduced here in the Grand Canyon to 0.05. On the other end, the vegetation would also record lower NDVIs for example the drought-resistant shrubs hence set was set at 0.43 to avoid missing these pockets.\n\n\n\nUsing Python’s rasterio and skimage, process the raw bands of Sentinel-2 into true-color composites and indexes. One principal hurdle was the correlation of the number of bands in the satellite with the actual wavelengths (e.g., Band 03 to be green, Band 04 red, and Band 08 NIR). After the application of Gaussian filters to smooth the data and reduce noise, map contours of water and vegetation directly onto the true-color image.\nThe result? Clear overlays of blue waterways snaking through the canyon and green vegetation clinging to shaded slopes against the surrounding harsh desert environment.\n\n\n\nBeyond the technical adjustment, it was evident how remote sensing could create links between satellite data and conservation on the ground. For the ecologists, it pictures how vegetation changes under extreme arid conditions. And for the rest of us, they remind us that life finds a way even in deserts, if one knows where to look."
   },
   {
-    "objectID": "posts/sunlight_exposure.html",
-    "href": "posts/sunlight_exposure.html",
-    "title": "Sunlight and Eclipse Periods Analysis for a SSO orbit",
+    "objectID": "posts/direct_transfer_orbit_earth_venus.html",
+    "href": "posts/direct_transfer_orbit_earth_venus.html",
+    "title": "Direct transfer from Earth to Venus.",
     "section": "",
-    "text": "credit: Photo by Kevin Stadnyk on Unsplash"
+    "text": "Trajectory from one planet can be calculated with the following sequence:\nIn practice, what we want to minimise is the velocity change, or ΔV. Often mission analysts minimise the escape infinite velocity and the total ΔV required for orbit changes.\nFor a direct transfer, we would try to minimise the infinite velocity, which is the square root of the escape C3, plus the planet orbit insertion ΔV, which is a function of the arrival C3. This leads to the core of interplanetary trajectory design: Find the trajectory that gives a minimal total ΔV1.\nRepeat the inputs of Lambert’s problem: time T1 and time T2. An optimisation sequence could look like this:\nPython code:\nThe code above produces the following output:\nPlotting the results then give"
   },
   {
-    "objectID": "posts/sunlight_exposure.html#introduction",
-    "href": "posts/sunlight_exposure.html#introduction",
-    "title": "Sunlight and Eclipse Periods Analysis for a SSO orbit",
-    "section": "Introduction",
-    "text": "Introduction\nIt is critical for mission planning to know the times for eclipse and sunlight for power management and thermal control missions. Solar-powered satellites draw energy whenever they are out of sunlight because onboard batteries will sustain power during an eclipse while in the shadow of the Earth. The actual frequency and time duration of eclipses can change according to the orbit of the satellite.\nThis blog post is based on the computation of sunlight and eclipse hours for a satellite using Python and the Skyfield library. A Sun-Synchronous Orbit with varying Right Ascension of the Ascending Node (RANN) values and computing the aggregate sunlight and eclipse hours for 31 days (744 hours) will done."
-  },
-  {
-    "objectID": "posts/sunlight_exposure.html#methodology",
-    "href": "posts/sunlight_exposure.html#methodology",
-    "title": "Sunlight and Eclipse Periods Analysis for a SSO orbit",
-    "section": "Methodology",
-    "text": "Methodology\n\nStep 1: Define the Satellite Orbit\nWe define a satellite with the following orbital parameters for a SSO orbit:\n\nSemi-major axis (sma): 6878 km (500 km altitude)\nEccentricity (ecc): 0.03\n\nInclination (inc): 97.4°\n\nArgument of Perigee (aop): 0.0°\n\nMean Anomaly: 0.0°\n\nEpoch: January 1, 2025, 12:00 UTC\n\nGenerate a Two-Line Element (TLE) set based on these parameters:\nfrom skyfield.api import load, EarthSatellite, wgs84\nfrom datetime import datetime\nfrom pytz import utc\nimport math\n\nts = load.timescale()\n\nbase_params = {\n    'sma': 6878.0,\n    'ecc': 0.03,\n    'inc': 97.4,\n    'aop': 0.0,\n    'mean_anomaly': 0.0,\n    'epoch': datetime(2025, 1, 1, 12, 0, 0, tzinfo=utc)\n}\n\ndef create_tle(satellite_name, raan):\n    mu = 3.986004418e5  # Earth's gravitational parameter (km^3/s^2)\n    sma_km = base_params['sma']\n    n_rad_s = math.sqrt(mu / (sma_km ** 3))\n    n_rev_per_day = n_rad_s * 86400 / (2 * math.pi)\n    mean_motion = f\"{n_rev_per_day:11.8f}\"\n\n    line1 = f\"1 00001U 00000A   25001.50000000  .00000000  00000-0  00000-0 0  0001\"\n    line2 = f\"2 00001 {base_params['inc']:8.4f} {raan:8.4f} {base_params['ecc'] * 1e7:07.0f} {base_params['aop']:8.4f} {base_params['mean_anomaly']:8.4f} {mean_motion}    00\"\n    \n    return EarthSatellite(line1, line2, satellite_name, ts)\n\n\nStep 2: Computing Sunlight and Eclipse Durations\nUsing Skyfield, determine if the satellite is illuminated by the Sun in order to find out when it is in eclipse. The function calculates the total period of sunlight and eclipse for one month.\nfrom skyfield.searchlib import find_discrete\n\ndef total_eclipse_sunlight(satellite):\n    eph = load('de421.bsp')\n    start_time = ts.utc(2025, 1, 1)\n    end_time = ts.utc(2025, 2, 1)\n\n    def is_eclipse(t):\n        sunlit = satellite.at(t).is_sunlit(eph)\n        return ~sunlit  # Returns True if in eclipse, False if in sunlight\n\n    is_eclipse.step_days = 0.0005\n    times, events = find_discrete(start_time, end_time, is_eclipse)\n\n    total_eclipse = 0.0\n    total_sunlight = 0.0\n    previous_time = start_time\n    previous_state = is_eclipse(start_time)\n\n    for ti, state in zip(times, events):\n        duration_hours = (ti - previous_time) * 24\n        if previous_state:\n            total_eclipse += duration_hours\n        else:\n            total_sunlight += duration_hours\n        previous_time = ti\n        previous_state = state\n\n    final_duration = (end_time - previous_time) * 24\n    \n    if previous_state:\n        total_eclipse += final_duration\n    else:\n        total_sunlight += final_duration\n\n    print(f\"Total sunlight: {total_sunlight:.2f} hours\")\n    print(f\"Total eclipse: {total_eclipse:.2f} hours\")\n\n\nStep 3: Running the Analysis for Different RAAN Values\nThe responsible factor for influencing eclipse duration is the position of the right ascension of the ascending node (RAAN) with respect to the orientation of the orbit concerning the Sun; there are three values possible for RAAN:\nraan_values = [50.0, 120.0, 240.0]\n\nfor raan in raan_values:\n    satellite = create_tle(f\"Sat_RAAN_{raan}\", raan)\n    print(f\"\\nRAAN: {raan}°\")\n    total_eclipse_sunlight(satellite)"
-  },
-  {
-    "objectID": "posts/sunlight_exposure.html#results",
-    "href": "posts/sunlight_exposure.html#results",
-    "title": "Sunlight and Eclipse Periods Analysis for a SSO orbit",
-    "section": "Results",
-    "text": "Results\n\nEclipse and Sunlight Durations\n\n\n\nRAAN (°)\nTotal Sunlight (hours)\nTotal Eclipse (hours)\n\n\n\n\n50.0\n526.27\n217.73\n\n\n120.0\n465.76\n278.24\n\n\n240.0\n484.98\n259.02\n\n\n\n\n\nObservations\n\nThe total excursion in eclipse lies under RAAN and varies substantially and in a given month could range from 217.73 to 278.24 hours.\nMaximum eclipse time is a recorded observation when RAAN = 120°, which goes to minimum for RAAN = 50° (217.73 hours).\nIt implies an almost 60-hour difference in eclipse per month with respect to the RAAN, evidencing the dependence of the sunlight exposure on the orbit orientation.\nThese eclipse durations give an average eclipse duration per orbit somewhere around 27 to 35 minutes, while the duration for each might be longer or shorter."
-  },
-  {
-    "objectID": "posts/sunlight_exposure.html#conclusion",
-    "href": "posts/sunlight_exposure.html#conclusion",
-    "title": "Sunlight and Eclipse Periods Analysis for a SSO orbit",
-    "section": "Conclusion",
-    "text": "Conclusion\nAn analysis describing the computation of sunlight and eclipse durations experienced by satellites using Python and Skyfield is given. Indeed, eclipse prediction becomes a critical measure in power management, thermal control, and most importantly, general mission planning for the satellite.\n\nMajor Points:\n\nPeriods of shadow are experienced by satellites, thus requiring them to fly battery-powered.\nTotal eclipse duration is affected by RAAN, but small variations can generally found for Sun-Synchronous Orbits.\nPython and Skyfield provide powerful open-source tools to analyze orbital illumination conditions.\nMission planners need to optimize battery storage and solar panel efficiency to ensure that operations are continuous through eclipse phases.\n\nBy understanding the eclipse patterns, engineers can describe as well as design resilient power systems for satellites that continue functional even during long shadow periods."
-  },
-  {
-    "objectID": "posts/deorbit_matlab.html",
-    "href": "posts/deorbit_matlab.html",
-    "title": "Deorbiting simulation with Matlab",
-    "section": "",
-    "text": "Code can be found here"
-  },
-  {
-    "objectID": "posts/deorbit_matlab.html#introduction",
-    "href": "posts/deorbit_matlab.html#introduction",
-    "title": "Deorbiting simulation with Matlab",
-    "section": "Introduction",
-    "text": "Introduction\nThis blog post is about the orbital decay simulation of a satellite with atmospheric drag in MATLAB. The script provides insight into the deorbiting process by simulating the trajectory of the satellite, calculating re-entry times, and visualizing several parameters, including how altitude decays with time."
-  },
-  {
-    "objectID": "posts/deorbit_matlab.html#methodology",
-    "href": "posts/deorbit_matlab.html#methodology",
-    "title": "Deorbiting simulation with Matlab",
-    "section": "Methodology",
-    "text": "Methodology\n\nStep 1: Setting Up the MATLAB Simulation\nThe initial conditions and properties of the spacecraft are defined at the start in the MATLAB script.\n\nGravitational Parameter (mu): \\(3.986 \\times 10^{14} \\, \\text{m}^3/\\text{s}^2\\)\nEarth’s Radius (Re): \\(6,378 \\, \\text{km}\\)\nSpacecraft Mass: \\(3 \\, \\text{kg}\\)\nDrag Coefficient (Cd): \\(2.2\\)\nCross-sectional Area for Drag: \\(0.01281 \\, \\text{m}^2\\)\n\nThe satellite’s initial position and velocity are specified in meters and meters per second:\n\nInitial Position (X, Y, Z): \\((4.211560342267748 \\times 10^{-13}, 6878 \\, \\text{km}, 0)\\)\nInitial Velocity (VX, VY, VZ): \\((0.9541223000883489, -5.842314103991534 \\times 10^{-17}, 7.552655699128404)\\)\n\nThere are forces in a simulation such as:\n\nThe gravitational force is computed according to Newton’s law of gravitation.\nThe atmospheric drag is modeled based on altitude, velocity, and density of the atmosphere. The density shows a pattern of exponential decay in terms of a standard reference value at an altitude of 150 km and the scale height of 60 km.\n\nHere’s the code\nfunction orbital_decay\n    %% Constants\n    mu = 3.986e14;  % Earth's gravitational parameter [m^3/s^2]\n    Re = 6378e3;    % Earth's radius [m]\n    \n    %% Spacecraft Properties\n    m  = 3;         % mass [kg]\n    Cd = 2.2;       % drag coefficient\n    A  = 0.01281;   % cross-sectional area [m^2]\n    \n    %% Initial Conditions\n    x0  = 4.211560342267748e-13 * 1000;\n    y0  = 6878e3;\n    z0  = 0;\n    vx0 = 0.9541223000883489 * 1000;\n    vy0 = -5.842314103991534e-17 * 1000;\n    vz0 = 7.552655699128404 * 1000;\n    \n    state0 = [x0; y0; z0; vx0; vy0; vz0];\n    \n    %% Simulation Parameters\n    % approx. 10 years\n    tspan = [0 3.15e8];  \n    \n    % Stop when altitude &lt;= 120 km\n    options = odeset('Events', @(t, state) reentryEvent(t, state, Re), ...\n                     'RelTol',1e-7, 'AbsTol',1e-9);\n                 \n    %% Propagate\n    [t, state, te, stateEvent] = ode45(@(t, state) odeEquations(t, state, mu, m, Cd, A, Re), tspan, state0, options);\n    \n    %% Check if event triggered\n    if isempty(stateEvent)\n        disp('Reentry altitude was not reached within the simulation time.');\n    else\n        r_event = norm(stateEvent(1:3));\n        alt_event = r_event - Re;\n        years = te/3.154e7;  % seconds to years\n        \n        fprintf('Reentry reached at t = %.2f days (%.2f years)\\n', te/86400, years);\n        fprintf('Reentry altitude = %.2f meters\\n', alt_event);\n    end\n    \n    %% Plot the 3D orbit\n    figure;\n    plot3(state(:,1), state(:,2), state(:,3), 'b-', 'LineWidth', 1.5); \n    hold on;\n    if ~isempty(stateEvent)\n        plot3(stateEvent(1), stateEvent(2), stateEvent(3), 'ro', 'MarkerSize', 8, 'LineWidth', 2);\n        legend('Trajectory','Reentry Point');\n    else\n        legend('Trajectory');\n    end\n    xlabel('x [m]'); ylabel('y [m]'); zlabel('z [m]');\n    title('Spacecraft Deorbiting Under Drag');\n    grid on; axis equal;\n    \n    %% Plot altitude vs time\n    alt = sqrt(state(:,1).^2 + state(:,2).^2 + state(:,3).^2) - Re;\n    figure;\n    plot(t/86400, alt/1000, 'LineWidth',1.5);\n    xlabel('Time [days]');\n    ylabel('Altitude [km]');\n    title('Altitude Decay Over Time');\n    grid on;\nend\n\n%% ODE function\nfunction dstatedt = odeEquations(~, state, mu, m, Cd, A, Re)\n    r_vec = state(1:3);\n    v_vec = state(4:6);\n    r = norm(r_vec);\n    v = norm(v_vec);\n    \n    % Gravitational accel\n    a_grav = -mu / r^3 * r_vec;\n    \n    % Altitude\n    alt = r - Re;\n\n    % Approximating GMAT's MSISE90 with F10.7=150\n    rho0 = 2.8e-10;   % [kg/m^3] at 150 km, 2e-10\n    H    = 6e4;     % scale height [m]\n    rho = rho0 * exp(-(alt - 150e3)/H);\n    \n    % Drag accel\n    a_drag = -0.5 * Cd * A / m * rho * v * v_vec;\n    \n    dstatedt = [v_vec; a_grav + a_drag];\nend\n\n%% Event function\nfunction [value, isterminal, direction] = reentryEvent(~, state, Re)\n    r = norm(state(1:3));\n    alt = r - Re;\n    value = alt - 120000;  \n    isterminal = 1;       \n    direction = -1;       \nend\nThe propagation is achieved using the MATLAB ‘ode45’ solver, which solves the equations of motion over time. This simulation is continued until the satellite reaches the point of re-entry above the earth, namely 120 km of altitude, after which an event function is triggered to stop the propagation.\n\n\nStep 2: Generating and Analyzing Data\nOnce the simulation is completed, some result values are returned by the script, which include:\n\nRe-entry Time: The time (in days and years) when the satellite reaches the re-entry altitude.\nRe-entry Altitude: The altitude at which re-entry occurs.\nTrajectory Visualization: A 3D plot of the satellite’s path around Earth with the re-entry point-visible.\nAltitude Decay Profile: The time-altitude plot illustrating how altitude decreases over time for a satellite.\n\nThe script may return:\nReentry reached at t = 3456.78 days (9.47 years)\nReentry altitude = 119995.23 meters\n\n\nStep 3: Visualizing Results\nThe script produces two important plots:\n\n3D Trajectory Plot: This shows a spiraling trajectory of the satellite heading toward Earth as it re-enters.\nAltitude vs Time Plot: It shows the orbit is decaying continuously due to atmospheric drag, with greater acceleration coming from denser layers of atmosphere as the satellite descends.\n\nBoth plots provide insights into the process of deorbiting and a confidence check for simulation accuracy."
-  },
-  {
-    "objectID": "posts/deorbit_matlab.html#results-and-implications",
-    "href": "posts/deorbit_matlab.html#results-and-implications",
-    "title": "Deorbiting simulation with Matlab",
-    "section": "Results and Implications",
-    "text": "Results and Implications\nIn the simulation the atmospheric drag had a profound influence on the orbital decay of LEO satellites. Findings include the following:\n\nPredictable Re-entry Timeline: The script predicts accurately the time when the satellite enters the atmosphere of Earth. This provides a clear re-entry timeline for the mission planners.\nDrag Parameters Matter: A change in either the drag coefficient or area can have significant effects on the deorbiting timeline, thus emphasizing the need for accurate modeling.\nUseful Visualization Tools: The 3D trajectory and altitude decay plots are intuitive and provide a means for understanding and conveying the process of deorbiting.\n\nThese insights would assist in the responsible disposal of satellites and the reduced risk of space debris, thus promoting compliance with international guidelines."
-  },
-  {
-    "objectID": "posts/deorbit_matlab.html#conclusion",
-    "href": "posts/deorbit_matlab.html#conclusion",
-    "title": "Deorbiting simulation with Matlab",
-    "section": "Conclusion",
-    "text": "Conclusion\nThe process of simulating a satellite deorbiting with MATLAB holds considerable value in understanding how atmospheric drag affects orbital decay. By modeling the forces on the satellite and visualizing its trajectory, engineers and scientists can safely design missions and help create a sustainable orbital environment.\nThis script is a basis for further studies, such as incorporating solar activity effects, simulating different designs of spacecraft, and investigating active deorbiting methods.\nFeel free to experiment with the script and modify it to your needs!"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "OneBigBot",
-    "section": "",
-    "text": "There’s something about space that just sticks with you—the hum of satellites, the roar of rockets, the quiet genius of AI whispering through it all. That’s where I live. I’m Winfred, and I geek out over spacecraft guidance, navigation, and control (GNC/AOCS, if we’re getting technical). My days? They’re spent blending brainy machine learning tricks with old-school control theory to crack problems like plotting paths through orbital chaos, merging sensor data into something that makes sense, or giving spacecraft the brains to act on their own.\nAround here, you’ll find projects where code meets cosmos—think teaching AI to squeeze every drop of power from thrusters, or running simulations where a satellite has to literally find itself in the vast dark. Everything’s built with that cold, hard truth of space in mind: when you’re orbiting Earth at 28,800 km/h, “close enough” isn’t in the vocabulary.\nConnect with me here: Link"
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "Winfred S. Ooh Azlin",
-    "section": "",
-    "text": "Email\nWelcome to the website of space engineer Winfred S. Ooh Azlin, specialist in orbital mechanics, astrodynamics simulations, and trajectory optimization for space missions. Here, you’ll find insights into satellite mission planning, control systems, and software-driven optimisations bridging physics and engineering."
-  },
-  {
-    "objectID": "about.html#experience",
-    "href": "about.html#experience",
-    "title": "Winfred S. Ooh Azlin",
-    "section": "Experience",
-    "text": "Experience\nAstra e.V. | Aerodynamics & Trajectory Planning | Feb 2025 - present IntentAI Pte. Ltd. | Senior AI Software Engineer | Dec 2023 - January 2025 Carsome Sdn. Bhd. | Senior Software Engineer | May 2022 - Dec 2023 Nindatech Sdn. Bhd. | Senior Software Engineer | Dec 2019 - Apr 2022 Udacity Inc. | Software Engineer (External Consultant) & Mentor | June 2017 - Mar 2021 OneRelief | Lead Developer | Sep 2018 - Nov 2019"
-  },
-  {
-    "objectID": "about.html#education",
-    "href": "about.html#education",
-    "title": "Winfred S. Ooh Azlin",
-    "section": "Education",
-    "text": "Education\nTechnische Universität Berlin | Berlin, Germany MSc. Space Engineering | Apr 2024 - In-progress  The Open University | Milton Keynes, United Kingdom MPhys. Physics | Oct 2022 - In-progress  University of London | London, United Kingdom BSc. Computer Science | Apr 2019 - Nov. 2022"
-  },
-  {
-    "objectID": "blog.html",
-    "href": "blog.html",
-    "title": "Projects",
-    "section": "",
-    "text": "Remote Sensing Image Analysis\n\n\n\n\n\n\nremote sensing\n\n\nclassification\n\n\nSentinel-2\n\n\n\nMapping Water and Vegetation Across an Entire Arid Landscape in the Grand Canyon\n\n\n\n\n\nMar 1, 2025\n\n\nWinfred\n\n\n\n\n\n\n\n\n\n\n\n\nDeorbiting simulation with Matlab\n\n\n\n\n\n\nsatellite\n\n\nspace debris\n\n\nsimulation\n\n\nMatlab\n\n\n\nSimulating Deorbiting with MATLAB\n\n\n\n\n\nFeb 28, 2025\n\n\nWinfred\n\n\n\n\n\n\n\n\n\n\n\n\nSunlight and Eclipse Periods Analysis for a SSO orbit\n\n\n\n\n\n\nsatellite\n\n\nSkyfield\n\n\nPython\n\n\nOrbital Mechanics\n\n\n\nAnalysing the sunlight and eclipse periods for a satellite in orbit over 744 hours (31 days)\n\n\n\n\n\nFeb 26, 2025\n\n\nWinfred\n\n\n\n\n\n\n\n\n\n\n\n\nGround Station Coverage Analysis for Satellites\n\n\n\n\n\n\nsatellite\n\n\nPoliastro\n\n\nSkyfield\n\n\nPython\n\n\n\nGetting satellite coverage for a network of ground stations\n\n\n\n\n\nFeb 25, 2025\n\n\nWinfred\n\n\n\n\n\n\n\n\n\n\n\n\nSpace Debris Impact on LEO Spacecraft\n\n\n\n\n\n\nsatellite\n\n\nspace debris\n\n\nsimulation\n\n\nPython\n\n\n\nSimulating Space Debris Impact on Spacecraft in LEO\n\n\n\n\n\nFeb 24, 2025\n\n\nWinfred\n\n\n\n\n\n\n\n\n\n\n\n\nDeorbiting simulation with GMAT\n\n\n\n\n\n\nsatellite\n\n\nspace debris\n\n\nsimulation\n\n\nGMAT\n\n\nPython\n\n\n\nSimulating Deorbiting with GMAT for a LEO Satellite\n\n\n\n\n\nFeb 24, 2025\n\n\nWinfred\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "posts/ground_station_coverage.html",
-    "href": "posts/ground_station_coverage.html",
-    "title": "Ground Station Coverage Analysis for Satellites",
-    "section": "",
-    "text": "credit: Photo by Stephan Widua on Unsplash"
-  },
-  {
-    "objectID": "posts/ground_station_coverage.html#introduction",
-    "href": "posts/ground_station_coverage.html#introduction",
-    "title": "Ground Station Coverage Analysis for Satellites",
-    "section": "Introduction",
-    "text": "Introduction\nThe visibility of satellites from ground stations impact reliable communications and efficiency of data flow. This project investigates the visibility coverage for a given satellite constellation from several ground stations around the world, particularly the northern and southern polar regions.\nOrbit design determines how long and how often the particular satellite will communicate with the ground station. Modeling passes using Two-Line Elements (TLEs) and calculating time each satellite spends over a station would give insight into communication durations and global coverage patterns.\nThis post describes the method, results, and implications of the analysis that can provide a means for engineers and scientists on optimizing ground station networks for reliable communications and data relay for satellite missions."
-  },
-  {
-    "objectID": "posts/ground_station_coverage.html#methodology",
-    "href": "posts/ground_station_coverage.html#methodology",
-    "title": "Ground Station Coverage Analysis for Satellites",
-    "section": "Methodology",
-    "text": "Methodology\n\nStep 1: Data Preparation\nThe ground station data must be loaded from a CSV file that contains this data:\n\nName: This is given as the name for the ground station.\nLatitude and Longitude: They’re the geographical coordinates of the station.\nRegion: The indicator tells if the station is located in the northern hemisphere or in the southern hemisphere.\n\nHere is a small sample of the dataset:\n\n\n\n\n\n\n\n\n\n\nName\nLatitude\nLongitude\nRegion\nNotes\n\n\n\n\nSvalbard Satellite Station\n78.229\n15.408\nNorth\nKongsberg Satellite Services\n\n\nNorth Pole Station\n64.800\n-147.650\nNorth\nSwedish Space Corporation\n\n\nAwarua\n-46.530\n168.380\nSouth\nATLAS Space Operations\n\n\nWestern Australia Space Center\n-29.010\n115.340\nSouth\nSwedish Space Corporation (SSC)\n\n\nAU-01\n-32.960\n138.850\nSouth\nLeaf Space\n\n\nSantiago Satellite Station\n-33.133\n-70.667\nSouth\nSwedish Space Corporation (SSC)\n\n\nBelo Horizonte\n-19.861\n-44.619\nSouth\nNew\n\n\nTahiti, French Polynesia\n-17.630\n-149.600\nSouth\nATLAS Space Operations\n\n\nCapetown\n-33.951\n18.459\nSouth\nNew\n\n\nToliara\n-23.375\n43.689\nSouth\nNew\n\n\n\n\n\nStep 2: Visualising Ground Station Locations\nUsing matplotlib and geopandas, plot the global distribution of ground stations on a world map. Stations in the northern hemisphere are marked in red, while those in the southern hemisphere are marked in blue. Each station is annotated with its name for clarity.\n\n\n\nGlobal Distribution of Satellite Ground Stations\n\n\nSummary Statistics:\n\nNorth Region:\n\nNumber of stations: 2\n\nAverage latitude: 71.51°\n\nMinimum latitude: 64.80°\n\nMaximum latitude: 78.23°\n\nSouth Region:\n\nNumber of stations: 8\n\nAverage latitude: -29.56°\n\nMinimum latitude: -46.53°\n\nMaximum latitude: -17.63°\n\n\n\n\nStep 3: Orbit Parameters and Mean Motion\nThe satellite used in this analysis is in a Sun-Synchronous Orbit (SSO) with the following parameters:\n\nSemi-major axis: 6878 km (500 km altitude)\nEccentricity: 0.01\n\nInclination: 97.2°\n\nRight Ascension of the Ascending Node (RAAN): 90°\n\nArgument of Perigee: 0°\n\nTrue Anomaly: 0°\n\nThe mean motion of the satellite is calculated as 15.21982 revolutions per day, which determines how frequently the satellite revisits specific regions.\n\n\nStep 4: Generating TLEs\nTo simulate satellite passes, generate a Two-Line Element (TLE) set for the satellite. The TLE format is widely used for orbital prediction and includes essential orbital elements such as inclination, RAAN, eccentricity, and mean motion.\nExample TLE:\n1 99999U 2520250.000000 .00000000 00000-0 00000-0 0 0000\n2 99999 97.2000 0.0000 0010000 0.0000 0.0000 15.21982000 00000\n\n\nStep 5: Visibility Analysis\nUsing the skyfield library, calculate the visibility of the satellite from each ground station over a 24-hour period. Key metrics include:\n\nRise Time: When the satellite rises above the horizon.\nCulmination Time: When the satellite reaches its highest point in the sky.\nSet Time: When the satellite sets below the horizon.\nDuration: Total time the satellite is visible during a pass.\n\nFor example, the Svalbard Satellite Station experienced the following passes:\n\nPass 1:\n\nRise: 2025-01-18T21:08:27Z\n\nCulmination: 2025-01-18T21:12:10Z\n\nSet: 2025-01-18T21:15:54Z\n\nDuration: 7.44 minutes\n\nPass 2:\n\nRise: 2025-01-18T22:43:02Z\n\nCulmination: 2025-01-18T22:46:26Z\n\nSet: 2025-01-18T22:49:51Z\n\nDuration: 6.81 minutes\n\n\n\n\nStep 6: Visualising Satellite Passes\nVisualise the satellite passes over all ground stations using a horizontal timeline plot. Each line represents a ground station, with markers indicating rise, culmination, and set times.\n\n\n\nSatellite Passes Over Ground Stations"
-  },
-  {
-    "objectID": "posts/ground_station_coverage.html#results",
-    "href": "posts/ground_station_coverage.html#results",
-    "title": "Ground Station Coverage Analysis for Satellites",
-    "section": "Results",
-    "text": "Results\n\nSummary Statistics\nThe analysis provides detailed statistics for each ground station, including the number of passes, average duration, and minimum/maximum durations. Here are some highlights:\n\nSvalbard Satellite Station:\n\nNumber of passes: 10\n\nAverage duration: 6.73 minutes\n\nMinimum duration: 4.98 minutes\n\nMaximum duration: 7.44 minutes\n\nTahiti, French Polynesia:\n\nNumber of passes: 3\n\nAverage duration: 5.47 minutes\n\nMinimum duration: 3.91 minutes\n\nMaximum duration: 7.11 minutes\n\n\n\n\nObservations\n\nGround stations in higher latitudes, such as Svalbard and the North Pole Station, experience more frequent and longer satellite passes due to the near-polar inclination of the orbit.\nMid-latitude stations, such as Belo Horizonte and Capetown, provide complementary coverage, ensuring continuous communication opportunities."
-  },
-  {
-    "objectID": "posts/ground_station_coverage.html#conclusion",
-    "href": "posts/ground_station_coverage.html#conclusion",
-    "title": "Ground Station Coverage Analysis for Satellites",
-    "section": "Conclusion",
-    "text": "Conclusion\nThe well-placed ground stations support satellite visibility and data-link throughput. Ground stations at high latitudes are very important since they tend to provide frequent communication windows, while stations at mid-latitudes provide further opportunities toward global coverage.\nOptimisation of the ground station network based on this knowledge will enhance mission operators’ ability to ensure reliable communications and efficient data relay in support of the operational requirements of satellite missions positioned in a congested orbital environment."
+    "objectID": "posts/direct_transfer_orbit_earth_venus.html#footnotes",
+    "href": "posts/direct_transfer_orbit_earth_venus.html#footnotes",
+    "title": "Direct transfer from Earth to Venus.",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nBiesbroek, R., 2016. LUNAR AND INTERPLANETARY TRAJECTORIES.↩︎"
   },
   {
     "objectID": "posts/space_debris.html",
@@ -200,7 +74,147 @@
     "href": "posts/space_debris.html#footnotes",
     "title": "Space Debris Impact on LEO Spacecraft",
     "section": "Footnotes",
-    "text": "Footnotes\n\n\nKerr, E., & Macdonald, M., 2015. IAC-15-A6.4.6 Page 1 of 6 IAC-15-A6.4.6 IMPROVING THE ACCURACY OF GENERAL PERTURBATIONS METHODS FOR SPACECRAFT LIFETIME ANALYSIS..↩︎"
+    "text": "Footnotes\n\n\nKerr, E., & Macdonald, M., 2015. IAC-15-A6.4.6 Page 1 of 6 IAC-15-A6.4.6 IMPROVING THE ACCURACY OF GENERAL PERTURBATIONS METHODS FOR SPACECRAFT LIFETIME ANALYSIS.↩︎"
+  },
+  {
+    "objectID": "posts/ground_station_coverage.html",
+    "href": "posts/ground_station_coverage.html",
+    "title": "Ground Station Coverage Analysis for Satellites",
+    "section": "",
+    "text": "credit: Photo by Stephan Widua on Unsplash"
+  },
+  {
+    "objectID": "posts/ground_station_coverage.html#introduction",
+    "href": "posts/ground_station_coverage.html#introduction",
+    "title": "Ground Station Coverage Analysis for Satellites",
+    "section": "Introduction",
+    "text": "Introduction\nThe visibility of satellites from ground stations impact reliable communications and efficiency of data flow. This project investigates the visibility coverage for a given satellite constellation from several ground stations around the world, particularly the northern and southern polar regions.\nOrbit design determines how long and how often the particular satellite will communicate with the ground station. Modeling passes using Two-Line Elements (TLEs) and calculating time each satellite spends over a station would give insight into communication durations and global coverage patterns.\nThis post describes the method, results, and implications of the analysis that can provide a means for engineers and scientists on optimizing ground station networks for reliable communications and data relay for satellite missions."
+  },
+  {
+    "objectID": "posts/ground_station_coverage.html#methodology",
+    "href": "posts/ground_station_coverage.html#methodology",
+    "title": "Ground Station Coverage Analysis for Satellites",
+    "section": "Methodology",
+    "text": "Methodology\n\nStep 1: Data Preparation\nThe ground station data must be loaded from a CSV file that contains this data:\n\nName: This is given as the name for the ground station.\nLatitude and Longitude: They’re the geographical coordinates of the station.\nRegion: The indicator tells if the station is located in the northern hemisphere or in the southern hemisphere.\n\nHere is a small sample of the dataset:\n\n\n\n\n\n\n\n\n\n\nName\nLatitude\nLongitude\nRegion\nNotes\n\n\n\n\nSvalbard Satellite Station\n78.229\n15.408\nNorth\nKongsberg Satellite Services\n\n\nNorth Pole Station\n64.800\n-147.650\nNorth\nSwedish Space Corporation\n\n\nAwarua\n-46.530\n168.380\nSouth\nATLAS Space Operations\n\n\nWestern Australia Space Center\n-29.010\n115.340\nSouth\nSwedish Space Corporation (SSC)\n\n\nAU-01\n-32.960\n138.850\nSouth\nLeaf Space\n\n\nSantiago Satellite Station\n-33.133\n-70.667\nSouth\nSwedish Space Corporation (SSC)\n\n\nBelo Horizonte\n-19.861\n-44.619\nSouth\nNew\n\n\nTahiti, French Polynesia\n-17.630\n-149.600\nSouth\nATLAS Space Operations\n\n\nCapetown\n-33.951\n18.459\nSouth\nNew\n\n\nToliara\n-23.375\n43.689\nSouth\nNew\n\n\n\n\n\nStep 2: Visualising Ground Station Locations\nUsing matplotlib and geopandas, plot the global distribution of ground stations on a world map. Stations in the northern hemisphere are marked in red, while those in the southern hemisphere are marked in blue. Each station is annotated with its name for clarity.\n\n\n\nGlobal Distribution of Satellite Ground Stations\n\n\nSummary Statistics:\n\nNorth Region:\n\nNumber of stations: 2\n\nAverage latitude: 71.51°\n\nMinimum latitude: 64.80°\n\nMaximum latitude: 78.23°\n\nSouth Region:\n\nNumber of stations: 8\n\nAverage latitude: -29.56°\n\nMinimum latitude: -46.53°\n\nMaximum latitude: -17.63°\n\n\n\n\nStep 3: Orbit Parameters and Mean Motion\nThe satellite used in this analysis is in a Sun-Synchronous Orbit (SSO) with the following parameters:\n\nSemi-major axis: 6878 km (500 km altitude)\nEccentricity: 0.01\n\nInclination: 97.2°\n\nRight Ascension of the Ascending Node (RAAN): 90°\n\nArgument of Perigee: 0°\n\nTrue Anomaly: 0°\n\nThe mean motion of the satellite is calculated as 15.21982 revolutions per day, which determines how frequently the satellite revisits specific regions.\n\n\nStep 4: Generating TLEs\nTo simulate satellite passes, generate a Two-Line Element (TLE) set for the satellite. The TLE format is widely used for orbital prediction and includes essential orbital elements such as inclination, RAAN, eccentricity, and mean motion.\nExample TLE:\n1 99999U 2520250.000000 .00000000 00000-0 00000-0 0 0000\n2 99999 97.2000 0.0000 0010000 0.0000 0.0000 15.21982000 00000\n\n\nStep 5: Visibility Analysis\nUsing the skyfield library, calculate the visibility of the satellite from each ground station over a 24-hour period. Key metrics include:\n\nRise Time: When the satellite rises above the horizon.\nCulmination Time: When the satellite reaches its highest point in the sky.\nSet Time: When the satellite sets below the horizon.\nDuration: Total time the satellite is visible during a pass.\n\nFor example, the Svalbard Satellite Station experienced the following passes:\n\nPass 1:\n\nRise: 2025-01-18T21:08:27Z\n\nCulmination: 2025-01-18T21:12:10Z\n\nSet: 2025-01-18T21:15:54Z\n\nDuration: 7.44 minutes\n\nPass 2:\n\nRise: 2025-01-18T22:43:02Z\n\nCulmination: 2025-01-18T22:46:26Z\n\nSet: 2025-01-18T22:49:51Z\n\nDuration: 6.81 minutes\n\n\n\n\nStep 6: Visualising Satellite Passes\nVisualise the satellite passes over all ground stations using a horizontal timeline plot. Each line represents a ground station, with markers indicating rise, culmination, and set times.\n\n\n\nSatellite Passes Over Ground Stations"
+  },
+  {
+    "objectID": "posts/ground_station_coverage.html#results",
+    "href": "posts/ground_station_coverage.html#results",
+    "title": "Ground Station Coverage Analysis for Satellites",
+    "section": "Results",
+    "text": "Results\n\nSummary Statistics\nThe analysis provides detailed statistics for each ground station, including the number of passes, average duration, and minimum/maximum durations. Here are some highlights:\n\nSvalbard Satellite Station:\n\nNumber of passes: 10\n\nAverage duration: 6.73 minutes\n\nMinimum duration: 4.98 minutes\n\nMaximum duration: 7.44 minutes\n\nTahiti, French Polynesia:\n\nNumber of passes: 3\n\nAverage duration: 5.47 minutes\n\nMinimum duration: 3.91 minutes\n\nMaximum duration: 7.11 minutes\n\n\n\n\nObservations\n\nGround stations in higher latitudes, such as Svalbard and the North Pole Station, experience more frequent and longer satellite passes due to the near-polar inclination of the orbit.\nMid-latitude stations, such as Belo Horizonte and Capetown, provide complementary coverage, ensuring continuous communication opportunities."
+  },
+  {
+    "objectID": "posts/ground_station_coverage.html#conclusion",
+    "href": "posts/ground_station_coverage.html#conclusion",
+    "title": "Ground Station Coverage Analysis for Satellites",
+    "section": "Conclusion",
+    "text": "Conclusion\nThe well-placed ground stations support satellite visibility and data-link throughput. Ground stations at high latitudes are very important since they tend to provide frequent communication windows, while stations at mid-latitudes provide further opportunities toward global coverage.\nOptimisation of the ground station network based on this knowledge will enhance mission operators’ ability to ensure reliable communications and efficient data relay in support of the operational requirements of satellite missions positioned in a congested orbital environment."
+  },
+  {
+    "objectID": "blog.html",
+    "href": "blog.html",
+    "title": "Projects",
+    "section": "",
+    "text": "Direct transfer from Earth to Venus.\n\n\n\n\n\n\ndirect tranfer\n\n\ninterplanetary transfer\n\n\nLambert’s problem\n\n\n\nLaunch window and C3 values for direct transfers to Venus.\n\n\n\n\n\nMar 4, 2025\n\n\nWinfred\n\n\n\n\n\n\n\n\n\n\n\n\nRemote Sensing Image Analysis\n\n\n\n\n\n\nremote sensing\n\n\nclassification\n\n\nSentinel-2\n\n\n\nMapping Water and Vegetation Across an Entire Arid Landscape in the Grand Canyon.\n\n\n\n\n\nMar 1, 2025\n\n\nWinfred\n\n\n\n\n\n\n\n\n\n\n\n\nDeorbiting simulation with Matlab\n\n\n\n\n\n\nsatellite\n\n\nspace debris\n\n\nsimulation\n\n\nMatlab\n\n\n\nSimulating Deorbiting with MATLAB.\n\n\n\n\n\nFeb 28, 2025\n\n\nWinfred\n\n\n\n\n\n\n\n\n\n\n\n\nSunlight and Eclipse Periods Analysis for a SSO orbit\n\n\n\n\n\n\nsatellite\n\n\nSkyfield\n\n\nPython\n\n\nOrbital Mechanics\n\n\n\nAnalysing the sunlight and eclipse periods for a satellite in orbit over 744 hours (31 days).\n\n\n\n\n\nFeb 26, 2025\n\n\nWinfred\n\n\n\n\n\n\n\n\n\n\n\n\nGround Station Coverage Analysis for Satellites\n\n\n\n\n\n\nsatellite\n\n\nPoliastro\n\n\nSkyfield\n\n\nPython\n\n\n\nGetting satellite coverage for a network of ground stations.\n\n\n\n\n\nFeb 25, 2025\n\n\nWinfred\n\n\n\n\n\n\n\n\n\n\n\n\nSpace Debris Impact on LEO Spacecraft\n\n\n\n\n\n\nsatellite\n\n\nspace debris\n\n\nsimulation\n\n\nPython\n\n\n\nSimulating Space Debris Impact on Spacecraft in LEO.\n\n\n\n\n\nFeb 24, 2025\n\n\nWinfred\n\n\n\n\n\n\n\n\n\n\n\n\nDeorbiting simulation with GMAT\n\n\n\n\n\n\nsatellite\n\n\nspace debris\n\n\nsimulation\n\n\nGMAT\n\n\nPython\n\n\n\nSimulating Deorbiting with GMAT for a LEO Satellite.\n\n\n\n\n\nFeb 24, 2025\n\n\nWinfred\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "Winfred S. Ooh Azlin",
+    "section": "",
+    "text": "Email\nWelcome to the website of space engineer Winfred S. Ooh Azlin, specialist in orbital mechanics, astrodynamics simulations, and trajectory optimization for space missions. Here, you’ll find insights into satellite mission planning, control systems, and software-driven optimisations bridging physics and engineering."
+  },
+  {
+    "objectID": "about.html#experience",
+    "href": "about.html#experience",
+    "title": "Winfred S. Ooh Azlin",
+    "section": "Experience",
+    "text": "Experience\nAstra e.V. | Aerodynamics & Trajectory Planning | Feb 2025 - present IntentAI Pte. Ltd. | Senior AI Software Engineer | Dec 2023 - January 2025 Carsome Sdn. Bhd. | Senior Software Engineer | May 2022 - Dec 2023 Nindatech Sdn. Bhd. | Senior Software Engineer | Dec 2019 - Apr 2022 Udacity Inc. | Software Engineer (External Consultant) & Mentor | June 2017 - Mar 2021 OneRelief | Lead Developer | Sep 2018 - Nov 2019"
+  },
+  {
+    "objectID": "about.html#education",
+    "href": "about.html#education",
+    "title": "Winfred S. Ooh Azlin",
+    "section": "Education",
+    "text": "Education\nTechnische Universität Berlin | Berlin, Germany MSc. Space Engineering | Apr 2024 - In-progress  The Open University | Milton Keynes, United Kingdom MPhys. Physics | Oct 2022 - In-progress  University of London | London, United Kingdom BSc. Computer Science | Apr 2019 - Nov. 2022"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "OneBigBot",
+    "section": "",
+    "text": "There’s something about space that just sticks with you—the hum of satellites, the roar of rockets, the quiet genius of AI whispering through it all. That’s where I live. I’m Winfred, and I geek out over spacecraft guidance, navigation, and control (GNC/AOCS, if we’re getting technical). My days? They’re spent blending brainy machine learning tricks with old-school control theory to crack problems like plotting paths through orbital chaos, merging sensor data into something that makes sense, or giving spacecraft the brains to act on their own.\nAround here, you’ll find projects where code meets cosmos—think teaching AI to squeeze every drop of power from thrusters, or running simulations where a satellite has to literally find itself in the vast dark. Everything’s built with that cold, hard truth of space in mind: when you’re orbiting Earth at 28,800 km/h, “close enough” isn’t in the vocabulary.\nConnect with me here: Link"
+  },
+  {
+    "objectID": "posts/deorbit_matlab.html",
+    "href": "posts/deorbit_matlab.html",
+    "title": "Deorbiting simulation with Matlab",
+    "section": "",
+    "text": "Code can be found here"
+  },
+  {
+    "objectID": "posts/deorbit_matlab.html#introduction",
+    "href": "posts/deorbit_matlab.html#introduction",
+    "title": "Deorbiting simulation with Matlab",
+    "section": "Introduction",
+    "text": "Introduction\nThis blog post is about the orbital decay simulation of a satellite with atmospheric drag in MATLAB. The script provides insight into the deorbiting process by simulating the trajectory of the satellite, calculating re-entry times, and visualizing several parameters, including how altitude decays with time."
+  },
+  {
+    "objectID": "posts/deorbit_matlab.html#methodology",
+    "href": "posts/deorbit_matlab.html#methodology",
+    "title": "Deorbiting simulation with Matlab",
+    "section": "Methodology",
+    "text": "Methodology\n\nStep 1: Setting Up the MATLAB Simulation\nThe initial conditions and properties of the spacecraft are defined at the start in the MATLAB script.\n\nGravitational Parameter (mu): \\(3.986 \\times 10^{14} \\, \\text{m}^3/\\text{s}^2\\)\nEarth’s Radius (Re): \\(6,378 \\, \\text{km}\\)\nSpacecraft Mass: \\(3 \\, \\text{kg}\\)\nDrag Coefficient (Cd): \\(2.2\\)\nCross-sectional Area for Drag: \\(0.01281 \\, \\text{m}^2\\)\n\nThe satellite’s initial position and velocity are specified in meters and meters per second:\n\nInitial Position (X, Y, Z): \\((4.211560342267748 \\times 10^{-13}, 6878 \\, \\text{km}, 0)\\)\nInitial Velocity (VX, VY, VZ): \\((0.9541223000883489, -5.842314103991534 \\times 10^{-17}, 7.552655699128404)\\)\n\nThere are forces in a simulation such as:\n\nThe gravitational force is computed according to Newton’s law of gravitation.\nThe atmospheric drag is modeled based on altitude, velocity, and density of the atmosphere. The density shows a pattern of exponential decay in terms of a standard reference value at an altitude of 150 km and the scale height of 60 km.\n\nHere’s the code\nfunction orbital_decay\n    %% Constants\n    mu = 3.986e14;  % Earth's gravitational parameter [m^3/s^2]\n    Re = 6378e3;    % Earth's radius [m]\n    \n    %% Spacecraft Properties\n    m  = 3;         % mass [kg]\n    Cd = 2.2;       % drag coefficient\n    A  = 0.01281;   % cross-sectional area [m^2]\n    \n    %% Initial Conditions\n    x0  = 4.211560342267748e-13 * 1000;\n    y0  = 6878e3;\n    z0  = 0;\n    vx0 = 0.9541223000883489 * 1000;\n    vy0 = -5.842314103991534e-17 * 1000;\n    vz0 = 7.552655699128404 * 1000;\n    \n    state0 = [x0; y0; z0; vx0; vy0; vz0];\n    \n    %% Simulation Parameters\n    % approx. 10 years\n    tspan = [0 3.15e8];  \n    \n    % Stop when altitude &lt;= 120 km\n    options = odeset('Events', @(t, state) reentryEvent(t, state, Re), ...\n                     'RelTol',1e-7, 'AbsTol',1e-9);\n                 \n    %% Propagate\n    [t, state, te, stateEvent] = ode45(@(t, state) odeEquations(t, state, mu, m, Cd, A, Re), tspan, state0, options);\n    \n    %% Check if event triggered\n    if isempty(stateEvent)\n        disp('Reentry altitude was not reached within the simulation time.');\n    else\n        r_event = norm(stateEvent(1:3));\n        alt_event = r_event - Re;\n        years = te/3.154e7;  % seconds to years\n        \n        fprintf('Reentry reached at t = %.2f days (%.2f years)\\n', te/86400, years);\n        fprintf('Reentry altitude = %.2f meters\\n', alt_event);\n    end\n    \n    %% Plot the 3D orbit\n    figure;\n    plot3(state(:,1), state(:,2), state(:,3), 'b-', 'LineWidth', 1.5); \n    hold on;\n    if ~isempty(stateEvent)\n        plot3(stateEvent(1), stateEvent(2), stateEvent(3), 'ro', 'MarkerSize', 8, 'LineWidth', 2);\n        legend('Trajectory','Reentry Point');\n    else\n        legend('Trajectory');\n    end\n    xlabel('x [m]'); ylabel('y [m]'); zlabel('z [m]');\n    title('Spacecraft Deorbiting Under Drag');\n    grid on; axis equal;\n    \n    %% Plot altitude vs time\n    alt = sqrt(state(:,1).^2 + state(:,2).^2 + state(:,3).^2) - Re;\n    figure;\n    plot(t/86400, alt/1000, 'LineWidth',1.5);\n    xlabel('Time [days]');\n    ylabel('Altitude [km]');\n    title('Altitude Decay Over Time');\n    grid on;\nend\n\n%% ODE function\nfunction dstatedt = odeEquations(~, state, mu, m, Cd, A, Re)\n    r_vec = state(1:3);\n    v_vec = state(4:6);\n    r = norm(r_vec);\n    v = norm(v_vec);\n    \n    % Gravitational accel\n    a_grav = -mu / r^3 * r_vec;\n    \n    % Altitude\n    alt = r - Re;\n\n    % Approximating GMAT's MSISE90 with F10.7=150\n    rho0 = 2.8e-10;   % [kg/m^3] at 150 km, 2e-10\n    H    = 6e4;     % scale height [m]\n    rho = rho0 * exp(-(alt - 150e3)/H);\n    \n    % Drag accel\n    a_drag = -0.5 * Cd * A / m * rho * v * v_vec;\n    \n    dstatedt = [v_vec; a_grav + a_drag];\nend\n\n%% Event function\nfunction [value, isterminal, direction] = reentryEvent(~, state, Re)\n    r = norm(state(1:3));\n    alt = r - Re;\n    value = alt - 120000;  \n    isterminal = 1;       \n    direction = -1;       \nend\nThe propagation is achieved using the MATLAB ‘ode45’ solver, which solves the equations of motion over time. This simulation is continued until the satellite reaches the point of re-entry above the earth, namely 120 km of altitude, after which an event function is triggered to stop the propagation.\n\n\nStep 2: Generating and Analyzing Data\nOnce the simulation is completed, some result values are returned by the script, which include:\n\nRe-entry Time: The time (in days and years) when the satellite reaches the re-entry altitude.\nRe-entry Altitude: The altitude at which re-entry occurs.\nTrajectory Visualization: A 3D plot of the satellite’s path around Earth with the re-entry point-visible.\nAltitude Decay Profile: The time-altitude plot illustrating how altitude decreases over time for a satellite.\n\nThe script may return:\nReentry reached at t = 3456.78 days (9.47 years)\nReentry altitude = 119995.23 meters\n\n\nStep 3: Visualizing Results\nThe script produces two important plots:\n\n3D Trajectory Plot: This shows a spiraling trajectory of the satellite heading toward Earth as it re-enters.\nAltitude vs Time Plot: It shows the orbit is decaying continuously due to atmospheric drag, with greater acceleration coming from denser layers of atmosphere as the satellite descends.\n\nBoth plots provide insights into the process of deorbiting and a confidence check for simulation accuracy."
+  },
+  {
+    "objectID": "posts/deorbit_matlab.html#results-and-implications",
+    "href": "posts/deorbit_matlab.html#results-and-implications",
+    "title": "Deorbiting simulation with Matlab",
+    "section": "Results and Implications",
+    "text": "Results and Implications\nIn the simulation the atmospheric drag had a profound influence on the orbital decay of LEO satellites. Findings include the following:\n\nPredictable Re-entry Timeline: The script predicts accurately the time when the satellite enters the atmosphere of Earth. This provides a clear re-entry timeline for the mission planners.\nDrag Parameters Matter: A change in either the drag coefficient or area can have significant effects on the deorbiting timeline, thus emphasizing the need for accurate modeling.\nUseful Visualization Tools: The 3D trajectory and altitude decay plots are intuitive and provide a means for understanding and conveying the process of deorbiting.\n\nThese insights would assist in the responsible disposal of satellites and the reduced risk of space debris, thus promoting compliance with international guidelines."
+  },
+  {
+    "objectID": "posts/deorbit_matlab.html#conclusion",
+    "href": "posts/deorbit_matlab.html#conclusion",
+    "title": "Deorbiting simulation with Matlab",
+    "section": "Conclusion",
+    "text": "Conclusion\nThe process of simulating a satellite deorbiting with MATLAB holds considerable value in understanding how atmospheric drag affects orbital decay. By modeling the forces on the satellite and visualizing its trajectory, engineers and scientists can safely design missions and help create a sustainable orbital environment.\nThis script is a basis for further studies, such as incorporating solar activity effects, simulating different designs of spacecraft, and investigating active deorbiting methods.\nFeel free to experiment with the script and modify it to your needs!"
+  },
+  {
+    "objectID": "posts/sunlight_exposure.html",
+    "href": "posts/sunlight_exposure.html",
+    "title": "Sunlight and Eclipse Periods Analysis for a SSO orbit",
+    "section": "",
+    "text": "credit: Photo by Kevin Stadnyk on Unsplash"
+  },
+  {
+    "objectID": "posts/sunlight_exposure.html#introduction",
+    "href": "posts/sunlight_exposure.html#introduction",
+    "title": "Sunlight and Eclipse Periods Analysis for a SSO orbit",
+    "section": "Introduction",
+    "text": "Introduction\nIt is critical for mission planning to know the times for eclipse and sunlight for power management and thermal control missions. Solar-powered satellites draw energy whenever they are out of sunlight because onboard batteries will sustain power during an eclipse while in the shadow of the Earth. The actual frequency and time duration of eclipses can change according to the orbit of the satellite.\nThis blog post is based on the computation of sunlight and eclipse hours for a satellite using Python and the Skyfield library. A Sun-Synchronous Orbit with varying Right Ascension of the Ascending Node (RANN) values and computing the aggregate sunlight and eclipse hours for 31 days (744 hours) will done."
+  },
+  {
+    "objectID": "posts/sunlight_exposure.html#methodology",
+    "href": "posts/sunlight_exposure.html#methodology",
+    "title": "Sunlight and Eclipse Periods Analysis for a SSO orbit",
+    "section": "Methodology",
+    "text": "Methodology\n\nStep 1: Define the Satellite Orbit\nWe define a satellite with the following orbital parameters for a SSO orbit:\n\nSemi-major axis (sma): 6878 km (500 km altitude)\nEccentricity (ecc): 0.03\n\nInclination (inc): 97.4°\n\nArgument of Perigee (aop): 0.0°\n\nMean Anomaly: 0.0°\n\nEpoch: January 1, 2025, 12:00 UTC\n\nGenerate a Two-Line Element (TLE) set based on these parameters:\nfrom skyfield.api import load, EarthSatellite, wgs84\nfrom datetime import datetime\nfrom pytz import utc\nimport math\n\nts = load.timescale()\n\nbase_params = {\n    'sma': 6878.0,\n    'ecc': 0.03,\n    'inc': 97.4,\n    'aop': 0.0,\n    'mean_anomaly': 0.0,\n    'epoch': datetime(2025, 1, 1, 12, 0, 0, tzinfo=utc)\n}\n\ndef create_tle(satellite_name, raan):\n    mu = 3.986004418e5  # Earth's gravitational parameter (km^3/s^2)\n    sma_km = base_params['sma']\n    n_rad_s = math.sqrt(mu / (sma_km ** 3))\n    n_rev_per_day = n_rad_s * 86400 / (2 * math.pi)\n    mean_motion = f\"{n_rev_per_day:11.8f}\"\n\n    line1 = f\"1 00001U 00000A   25001.50000000  .00000000  00000-0  00000-0 0  0001\"\n    line2 = f\"2 00001 {base_params['inc']:8.4f} {raan:8.4f} {base_params['ecc'] * 1e7:07.0f} {base_params['aop']:8.4f} {base_params['mean_anomaly']:8.4f} {mean_motion}    00\"\n    \n    return EarthSatellite(line1, line2, satellite_name, ts)\n\n\nStep 2: Computing Sunlight and Eclipse Durations\nUsing Skyfield, determine if the satellite is illuminated by the Sun in order to find out when it is in eclipse. The function calculates the total period of sunlight and eclipse for one month.\nfrom skyfield.searchlib import find_discrete\n\ndef total_eclipse_sunlight(satellite):\n    eph = load('de421.bsp')\n    start_time = ts.utc(2025, 1, 1)\n    end_time = ts.utc(2025, 2, 1)\n\n    def is_eclipse(t):\n        sunlit = satellite.at(t).is_sunlit(eph)\n        return ~sunlit  # Returns True if in eclipse, False if in sunlight\n\n    is_eclipse.step_days = 0.0005\n    times, events = find_discrete(start_time, end_time, is_eclipse)\n\n    total_eclipse = 0.0\n    total_sunlight = 0.0\n    previous_time = start_time\n    previous_state = is_eclipse(start_time)\n\n    for ti, state in zip(times, events):\n        duration_hours = (ti - previous_time) * 24\n        if previous_state:\n            total_eclipse += duration_hours\n        else:\n            total_sunlight += duration_hours\n        previous_time = ti\n        previous_state = state\n\n    final_duration = (end_time - previous_time) * 24\n    \n    if previous_state:\n        total_eclipse += final_duration\n    else:\n        total_sunlight += final_duration\n\n    print(f\"Total sunlight: {total_sunlight:.2f} hours\")\n    print(f\"Total eclipse: {total_eclipse:.2f} hours\")\n\n\nStep 3: Running the Analysis for Different RAAN Values\nThe responsible factor for influencing eclipse duration is the position of the right ascension of the ascending node (RAAN) with respect to the orientation of the orbit concerning the Sun; there are three values possible for RAAN:\nraan_values = [50.0, 120.0, 240.0]\n\nfor raan in raan_values:\n    satellite = create_tle(f\"Sat_RAAN_{raan}\", raan)\n    print(f\"\\nRAAN: {raan}°\")\n    total_eclipse_sunlight(satellite)"
+  },
+  {
+    "objectID": "posts/sunlight_exposure.html#results",
+    "href": "posts/sunlight_exposure.html#results",
+    "title": "Sunlight and Eclipse Periods Analysis for a SSO orbit",
+    "section": "Results",
+    "text": "Results\n\nEclipse and Sunlight Durations\n\n\n\nRAAN (°)\nTotal Sunlight (hours)\nTotal Eclipse (hours)\n\n\n\n\n50.0\n526.27\n217.73\n\n\n120.0\n465.76\n278.24\n\n\n240.0\n484.98\n259.02\n\n\n\n\n\nObservations\n\nThe total excursion in eclipse lies under RAAN and varies substantially and in a given month could range from 217.73 to 278.24 hours.\nMaximum eclipse time is a recorded observation when RAAN = 120°, which goes to minimum for RAAN = 50° (217.73 hours).\nIt implies an almost 60-hour difference in eclipse per month with respect to the RAAN, evidencing the dependence of the sunlight exposure on the orbit orientation.\nThese eclipse durations give an average eclipse duration per orbit somewhere around 27 to 35 minutes, while the duration for each might be longer or shorter."
+  },
+  {
+    "objectID": "posts/sunlight_exposure.html#conclusion",
+    "href": "posts/sunlight_exposure.html#conclusion",
+    "title": "Sunlight and Eclipse Periods Analysis for a SSO orbit",
+    "section": "Conclusion",
+    "text": "Conclusion\nAn analysis describing the computation of sunlight and eclipse durations experienced by satellites using Python and Skyfield is given. Indeed, eclipse prediction becomes a critical measure in power management, thermal control, and most importantly, general mission planning for the satellite.\n\nMajor Points:\n\nPeriods of shadow are experienced by satellites, thus requiring them to fly battery-powered.\nTotal eclipse duration is affected by RAAN, but small variations can generally found for Sun-Synchronous Orbits.\nPython and Skyfield provide powerful open-source tools to analyze orbital illumination conditions.\nMission planners need to optimize battery storage and solar panel efficiency to ensure that operations are continuous through eclipse phases.\n\nBy understanding the eclipse patterns, engineers can describe as well as design resilient power systems for satellites that continue functional even during long shadow periods."
   },
   {
     "objectID": "posts/deorbit_gmat.html#introduction",
